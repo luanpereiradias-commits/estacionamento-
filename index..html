@@ -1,210 +1,115 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Estacionamento Simples</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #1a1a2e;
-      color: white;
-      padding: 20px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    h1 { color: #00d4ff; text-align: center; }
-    .stats {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 25px;
-      flex-wrap: wrap;
-    }
-    .stat {
-      background: #16213e;
-      padding: 15px 25px;
-      border-radius: 8px;
-      flex: 1;
-      min-width: 120px;
-      text-align: center;
-    }
-    .stat span { display: block; font-size: 24px; font-weight: bold; margin-top: 5px; }
-    .verde { color: #00ff88; }
-    .vermelho { color: #ff5555; }
-    .azul { color: #00d4ff; }
-
-    .vagas {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      gap: 10px;
-      margin-bottom: 30px;
-    }
-    .vaga {
-      height: 70px;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      cursor: pointer;
-      border: 2px solid;
-    }
-    .livre {
-      background: #0a3d2a;
-      border-color: #00ff88;
-      color: #00ff88;
-    }
-    .ocupada {
-      background: #3d0a0a;
-      border-color: #ff5555;
-      color: #ffaaaa;
-      font-size: 12px;
-    }
-
-    .painel {
-      background: #16213e;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-    input, select, button {
-      padding: 10px;
-      margin: 5px 0;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 5px;
-      border: none;
-      font-size: 16px;
-    }
-    input, select { background: #0f3460; color: white; }
-    button {
-      background: #00d4ff;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    button.sair { background: #ff5555; color: white; }
-    .historico {
-      background: #16213e;
-      padding: 15px;
-      border-radius: 10px;
-      max-height: 200px;
-      overflow-y: auto;
-      font-size: 14px;
-    }
-    .historico div { padding: 5px 0; border-bottom: 1px solid #333; }
-  </style>
+<meta charset="UTF-8">
+<title>Estacionamento</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    padding: 20px;
+  }
+  h1 { color: #00d4ff; }
+  .vaga {
+    display: inline-block;
+    width: 80px;
+    height: 60px;
+    margin: 5px;
+    text-align: center;
+    line-height: 60px;
+    border-radius: 8px;
+    font-weight: bold;
+  }
+  .livre { background: #0a5; }
+  .ocupada { background: #a00; font-size: 12px; line-height: 1.3; padding-top: 12px; }
+  input, select, button {
+    padding: 10px;
+    margin: 5px 0;
+    font-size: 16px;
+  }
+  button { cursor: pointer; }
+</style>
 </head>
 <body>
 
-  <h1>🅿️ Estacionamento</h1>
+<h1>Sistema de Estacionamento</h1>
 
-  <div class="stats">
-    <div class="stat">Total<br><span class="azul" id="total">12</span></div>
-    <div class="stat">Livres<br><span class="verde" id="livres">12</span></div>
-    <div class="stat">Ocupadas<br><span class="vermelho" id="ocupadas">0</span></div>
-  </div>
+<div id="vagas"></div>
 
-  <div class="vagas" id="vagas"></div>
+<br><br>
 
-  <div class="painel">
-    <h3>Entrada</h3>
-    <input type="text" id="placa" placeholder="Placa (ex: ABC1D23)" maxlength="8">
-    <select id="vagaEntrada"></select>
-    <button onclick="entrar()">Registrar Entrada</button>
-  </div>
+<b>Entrada:</b><br>
+Placa: <input type="text" id="placa" placeholder="ABC1234"><br>
+Vaga: <select id="entrada"></select><br>
+<button onclick="entrar()">Entrar</button>
 
-  <div class="painel">
-    <h3>Saída</h3>
-    <select id="vagaSaida"></select>
-    <button class="sair" onclick="sair()">Registrar Saída</button>
-  </div>
+<br><br>
 
-  <h3>Histórico</h3>
-  <div class="historico" id="historico"></div>
+<b>Saída:</b><br>
+<select id="saida"></select><br>
+<button onclick="sair()">Sair</button>
 
-  <script>
-    const TOTAL = 12;
-    let vagas = [];
+<br><br>
+<div id="msg"></div>
 
-    // Criar vagas
-    for (let i = 1; i <= TOTAL; i++) {
-      vagas.push({ num: i, ocupada: false, placa: null });
+<script>
+  let vagas = [];
+
+  // cria 10 vagas
+  for(let i=1; i<=10; i++){
+    vagas.push({num: i, livre: true, placa: ""});
+  }
+
+  function mostrar(){
+    let html = "";
+    let optsEntrada = "<option value=''>Escolha</option>";
+    let optsSaida = "<option value=''>Escolha</option>";
+
+    for(let v of vagas){
+      if(v.livre){
+        html += `<div class="vaga livre">Vaga ${v.num}</div>`;
+        optsEntrada += `<option value="${v.num}">Vaga ${v.num}</option>`;
+      } else {
+        html += `<div class="vaga ocupada">V${v.num}<br>${v.placa}</div>`;
+        optsSaida += `<option value="${v.num}">Vaga ${v.num} - ${v.placa}</option>`;
+      }
     }
 
-    function atualizar() {
-      // Grade de vagas
-      const container = document.getElementById('vagas');
-      container.innerHTML = '';
-      vagas.forEach(v => {
-        const div = document.createElement('div');
-        div.className = 'vaga ' + (v.ocupada ? 'ocupada' : 'livre');
-        div.innerHTML = v.ocupada ? `V${v.num}<br>${v.placa}` : `Vaga ${v.num}`;
-        container.appendChild(div);
-      });
+    document.getElementById("vagas").innerHTML = html;
+    document.getElementById("entrada").innerHTML = optsEntrada;
+    document.getElementById("saida").innerHTML = optsSaida;
+  }
 
-      // Selects
-      const selEnt = document.getElementById('vagaEntrada');
-      const selSai = document.getElementById('vagaSaida');
-      selEnt.innerHTML = '<option value="">Escolha vaga livre</option>';
-      selSai.innerHTML = '<option value="">Escolha vaga ocupada</option>';
+  function entrar(){
+    let placa = document.getElementById("placa").value.toUpperCase().trim();
+    let num = document.getElementById("entrada").value;
 
-      vagas.forEach(v => {
-        if (!v.ocupada) {
-          selEnt.innerHTML += `<option value="${v.num}">Vaga ${v.num}</option>`;
-        } else {
-          selSai.innerHTML += `<option value="${v.num}">Vaga ${v.num} - ${v.placa}</option>`;
-        }
-      });
+    if(!placa){ alert("Digite a placa"); return; }
+    if(!num){ alert("Escolha a vaga"); return; }
 
-      // Stats
-      const livres = vagas.filter(v => !v.ocupada).length;
-      document.getElementById('total').textContent = TOTAL;
-      document.getElementById('livres').textContent = livres;
-      document.getElementById('ocupadas').textContent = TOTAL - livres;
-    }
+    let v = vagas.find(x => x.num == num);
+    v.livre = false;
+    v.placa = placa;
 
-    function entrar() {
-      const placa = document.getElementById('placa').value.trim().toUpperCase();
-      const num = parseInt(document.getElementById('vagaEntrada').value);
+    document.getElementById("placa").value = "";
+    document.getElementById("msg").innerHTML = "Veículo " + placa + " entrou na vaga " + num;
+    mostrar();
+  }
 
-      if (!placa) { alert('Digite a placa!'); return; }
-      if (!num) { alert('Escolha uma vaga!'); return; }
+  function sair(){
+    let num = document.getElementById("saida").value;
+    if(!num){ alert("Escolha a vaga"); return; }
 
-      const vaga = vagas.find(v => v.num === num);
-      if (vaga.ocupada) { alert('Vaga já ocupada!'); return; }
+    let v = vagas.find(x => x.num == num);
+    document.getElementById("msg").innerHTML = "Veículo " + v.placa + " saiu da vaga " + num;
+    v.livre = true;
+    v.placa = "";
+    mostrar();
+  }
 
-      vaga.ocupada = true;
-      vaga.placa = placa;
-      document.getElementById('placa').value = '';
+  mostrar();
+</script>
 
-      adicionarHist(`ENTRADA → ${placa} na Vaga ${num}`);
-      atualizar();
-    }
-
-    function sair() {
-      const num = parseInt(document.getElementById('vagaSaida').value);
-      if (!num) { alert('Escolha uma vaga ocupada!'); return; }
-
-      const vaga = vagas.find(v => v.num === num);
-      if (!vaga.ocupada) { alert('Vaga já está livre!'); return; }
-
-      adicionarHist(`SAÍDA → ${vaga.placa} da Vaga ${num}`);
-      vaga.ocupada = false;
-      vaga.placa = null;
-      atualizar();
-    }
-
-    function adicionarHist(texto) {
-      const agora = new Date().toLocaleTimeString('pt-BR');
-      const div = document.createElement('div');
-      div.textContent = `[${agora}] ${texto}`;
-      document.getElementById('historico').prepend(div);
-    }
-
-    // Iniciar
-    atualizar();
-  </script>
 </body>
 </html>
