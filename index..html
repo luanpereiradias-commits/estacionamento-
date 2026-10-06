@@ -5,13 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistema de Estacionamento</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial, sans-serif;
     background: #0f172a;
     color: #e2e8f0;
     padding: 20px;
-    min-height: 100vh;
+    margin: 0;
   }
   .container {
     max-width: 900px;
@@ -20,8 +19,7 @@
   h1 {
     text-align: center;
     color: #38bdf8;
-    margin-bottom: 8px;
-    font-size: 1.8rem;
+    margin-bottom: 5px;
   }
   .subtitulo {
     text-align: center;
@@ -43,8 +41,15 @@
     min-width: 100px;
     text-align: center;
   }
-  .stat .label { font-size: 0.85rem; color: #94a3b8; }
-  .stat .valor { font-size: 1.6rem; font-weight: bold; margin-top: 4px; }
+  .stat .label {
+    font-size: 14px;
+    color: #94a3b8;
+  }
+  .stat .valor {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 4px;
+  }
   .verde { color: #4ade80; }
   .vermelho { color: #f87171; }
   .azul { color: #38bdf8; }
@@ -64,7 +69,6 @@
     justify-content: center;
     font-weight: bold;
     border: 2px solid;
-    cursor: default;
   }
   .vaga.livre {
     background: #14532d;
@@ -75,7 +79,7 @@
     background: #7f1d1d;
     border-color: #ef4444;
     color: #fca5a5;
-    font-size: 0.8rem;
+    font-size: 13px;
     text-align: center;
     padding: 6px;
   }
@@ -89,13 +93,13 @@
   }
   .painel h2 {
     color: #38bdf8;
-    font-size: 1.1rem;
+    font-size: 18px;
     margin-bottom: 12px;
   }
   label {
     display: block;
     margin-bottom: 4px;
-    font-size: 0.9rem;
+    font-size: 14px;
     color: #94a3b8;
   }
   input, select {
@@ -106,18 +110,15 @@
     border: 1px solid #475569;
     background: #0f172a;
     color: #e2e8f0;
-    font-size: 1rem;
-  }
-  input:focus, select:focus {
-    outline: none;
-    border-color: #38bdf8;
+    font-size: 16px;
+    box-sizing: border-box;
   }
   button {
     width: 100%;
     padding: 12px;
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 16px;
     font-weight: bold;
     cursor: pointer;
   }
@@ -139,16 +140,18 @@
   }
   .historico h2 {
     color: #38bdf8;
-    font-size: 1.1rem;
+    font-size: 18px;
     margin-bottom: 10px;
   }
   .hist-item {
     padding: 8px 0;
     border-bottom: 1px solid #334155;
-    font-size: 0.9rem;
+    font-size: 14px;
   }
-  .hist-item:last-child { border-bottom: none; }
-  .hist-hora { color: #64748b; font-size: 0.8rem; }
+  .hist-hora {
+    color: #64748b;
+    font-size: 12px;
+  }
   .mensagem {
     text-align: center;
     margin-top: 15px;
@@ -156,7 +159,6 @@
     border-radius: 8px;
     background: #0f172a;
     color: #38bdf8;
-    min-height: 20px;
   }
 </style>
 </head>
@@ -210,7 +212,6 @@
   const TOTAL_VAGAS = 12;
   let vagas = [];
 
-  // Criar as vagas
   for (let i = 1; i <= TOTAL_VAGAS; i++) {
     vagas.push({
       numero: i,
@@ -220,7 +221,6 @@
   }
 
   function atualizarTela() {
-    // Desenhar as vagas
     const container = document.getElementById("vagas");
     container.innerHTML = "";
 
@@ -236,7 +236,6 @@
       container.appendChild(div);
     });
 
-    // Atualizar selects
     const selEntrada = document.getElementById("vagaEntrada");
     const selSaida = document.getElementById("vagaSaida");
 
@@ -251,7 +250,6 @@
       }
     });
 
-    // Atualizar contadores
     const livres = vagas.filter(function(v) { return !v.ocupada; }).length;
     document.getElementById("total").textContent = TOTAL_VAGAS;
     document.getElementById("livres").textContent = livres;
@@ -271,7 +269,6 @@
       return;
     }
 
-    // Verifica se a placa já está estacionada
     for (let i = 0; i < vagas.length; i++) {
       if (vagas[i].ocupada && vagas[i].placa === placa) {
         alert("Esta placa já está estacionada!");
@@ -330,7 +327,6 @@
     lista.insertBefore(div, lista.firstChild);
   }
 
-  // Inicia o sistema
   atualizarTela();
 </script>
 </body>
