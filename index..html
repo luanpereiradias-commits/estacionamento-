@@ -2,114 +2,336 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Estacionamento</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Estacionamento</title>
 <style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: Arial, sans-serif;
-    background: #111;
-    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
     padding: 20px;
+    min-height: 100vh;
   }
-  h1 { color: #00d4ff; }
-  .vaga {
-    display: inline-block;
-    width: 80px;
-    height: 60px;
-    margin: 5px;
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
     text-align: center;
-    line-height: 60px;
-    border-radius: 8px;
+    color: #38bdf8;
+    margin-bottom: 8px;
+    font-size: 1.8rem;
+  }
+  .subtitulo {
+    text-align: center;
+    color: #94a3b8;
+    margin-bottom: 25px;
+  }
+  .stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 14px;
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+  }
+  .stat .label { font-size: 0.85rem; color: #94a3b8; }
+  .stat .valor { font-size: 1.6rem; font-weight: bold; margin-top: 4px; }
+  .verde { color: #4ade80; }
+  .vermelho { color: #f87171; }
+  .azul { color: #38bdf8; }
+
+  .vagas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+  .vaga {
+    height: 75px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     font-weight: bold;
+    border: 2px solid;
+    cursor: default;
   }
-  .livre { background: #0a5; }
-  .ocupada { background: #a00; font-size: 12px; line-height: 1.3; padding-top: 12px; }
-  input, select, button {
+  .vaga.livre {
+    background: #14532d;
+    border-color: #22c55e;
+    color: #4ade80;
+  }
+  .vaga.ocupada {
+    background: #7f1d1d;
+    border-color: #ef4444;
+    color: #fca5a5;
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 6px;
+  }
+
+  .painel {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  .painel h2 {
+    color: #38bdf8;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+  }
+  label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    color: #94a3b8;
+  }
+  input, select {
+    width: 100%;
+    padding: 11px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-size: 1rem;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: #38bdf8;
+  }
+  button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .btn-entrar {
+    background: #22c55e;
+    color: #052e16;
+  }
+  .btn-sair {
+    background: #ef4444;
+    color: white;
+  }
+  .historico {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 15px;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .historico h2 {
+    color: #38bdf8;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  .hist-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #334155;
+    font-size: 0.9rem;
+  }
+  .hist-item:last-child { border-bottom: none; }
+  .hist-hora { color: #64748b; font-size: 0.8rem; }
+  .mensagem {
+    text-align: center;
+    margin-top: 15px;
     padding: 10px;
-    margin: 5px 0;
-    font-size: 16px;
+    border-radius: 8px;
+    background: #0f172a;
+    color: #38bdf8;
+    min-height: 20px;
   }
-  button { cursor: pointer; }
 </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Sistema de Estacionamento</h1>
+    <p class="subtitulo">Controle de vagas</p>
 
-<h1>Sistema de Estacionamento</h1>
+    <div class="stats">
+      <div class="stat">
+        <div class="label">Total</div>
+        <div class="valor azul" id="total">12</div>
+      </div>
+      <div class="stat">
+        <div class="label">Livres</div>
+        <div class="valor verde" id="livres">12</div>
+      </div>
+      <div class="stat">
+        <div class="label">Ocupadas</div>
+        <div class="valor vermelho" id="ocupadas">0</div>
+      </div>
+    </div>
 
-<div id="vagas"></div>
+    <div class="vagas-grid" id="vagas"></div>
 
-<br><br>
+    <div class="painel">
+      <h2>Entrada de Veículo</h2>
+      <label>Placa</label>
+      <input type="text" id="placa" placeholder="Ex: ABC1D23" maxlength="8">
+      <label>Escolher Vaga Livre</label>
+      <select id="vagaEntrada"></select>
+      <button class="btn-entrar" onclick="entrar()">Registrar Entrada</button>
+    </div>
 
-<b>Entrada:</b><br>
-Placa: <input type="text" id="placa" placeholder="ABC1234"><br>
-Vaga: <select id="entrada"></select><br>
-<button onclick="entrar()">Entrar</button>
+    <div class="painel">
+      <h2>Saída de Veículo</h2>
+      <label>Escolher Vaga Ocupada</label>
+      <select id="vagaSaida"></select>
+      <button class="btn-sair" onclick="sair()">Registrar Saída</button>
+    </div>
 
-<br><br>
+    <div class="historico">
+      <h2>Histórico</h2>
+      <div id="listaHistorico"></div>
+    </div>
 
-<b>Saída:</b><br>
-<select id="saida"></select><br>
-<button onclick="sair()">Sair</button>
-
-<br><br>
-<div id="msg"></div>
+    <div class="mensagem" id="mensagem"></div>
+  </div>
 
 <script>
+  const TOTAL_VAGAS = 12;
   let vagas = [];
 
-  // cria 10 vagas
-  for(let i=1; i<=10; i++){
-    vagas.push({num: i, livre: true, placa: ""});
+  // Criar as vagas
+  for (let i = 1; i <= TOTAL_VAGAS; i++) {
+    vagas.push({
+      numero: i,
+      ocupada: false,
+      placa: null
+    });
   }
 
-  function mostrar(){
-    let html = "";
-    let optsEntrada = "<option value=''>Escolha</option>";
-    let optsSaida = "<option value=''>Escolha</option>";
+  function atualizarTela() {
+    // Desenhar as vagas
+    const container = document.getElementById("vagas");
+    container.innerHTML = "";
 
-    for(let v of vagas){
-      if(v.livre){
-        html += `<div class="vaga livre">Vaga ${v.num}</div>`;
-        optsEntrada += `<option value="${v.num}">Vaga ${v.num}</option>`;
+    vagas.forEach(function(vaga) {
+      const div = document.createElement("div");
+      div.className = "vaga " + (vaga.ocupada ? "ocupada" : "livre");
+
+      if (vaga.ocupada) {
+        div.innerHTML = "Vaga " + vaga.numero + "<br>" + vaga.placa;
       } else {
-        html += `<div class="vaga ocupada">V${v.num}<br>${v.placa}</div>`;
-        optsSaida += `<option value="${v.num}">Vaga ${v.num} - ${v.placa}</option>`;
+        div.textContent = "Vaga " + vaga.numero;
+      }
+      container.appendChild(div);
+    });
+
+    // Atualizar selects
+    const selEntrada = document.getElementById("vagaEntrada");
+    const selSaida = document.getElementById("vagaSaida");
+
+    selEntrada.innerHTML = "<option value=''>Selecione...</option>";
+    selSaida.innerHTML = "<option value=''>Selecione...</option>";
+
+    vagas.forEach(function(vaga) {
+      if (!vaga.ocupada) {
+        selEntrada.innerHTML += "<option value='" + vaga.numero + "'>Vaga " + vaga.numero + "</option>";
+      } else {
+        selSaida.innerHTML += "<option value='" + vaga.numero + "'>Vaga " + vaga.numero + " - " + vaga.placa + "</option>";
+      }
+    });
+
+    // Atualizar contadores
+    const livres = vagas.filter(function(v) { return !v.ocupada; }).length;
+    document.getElementById("total").textContent = TOTAL_VAGAS;
+    document.getElementById("livres").textContent = livres;
+    document.getElementById("ocupadas").textContent = TOTAL_VAGAS - livres;
+  }
+
+  function entrar() {
+    const placa = document.getElementById("placa").value.trim().toUpperCase();
+    const num = parseInt(document.getElementById("vagaEntrada").value);
+
+    if (!placa) {
+      alert("Digite a placa do veículo!");
+      return;
+    }
+    if (!num) {
+      alert("Selecione uma vaga!");
+      return;
+    }
+
+    // Verifica se a placa já está estacionada
+    for (let i = 0; i < vagas.length; i++) {
+      if (vagas[i].ocupada && vagas[i].placa === placa) {
+        alert("Esta placa já está estacionada!");
+        return;
       }
     }
 
-    document.getElementById("vagas").innerHTML = html;
-    document.getElementById("entrada").innerHTML = optsEntrada;
-    document.getElementById("saida").innerHTML = optsSaida;
-  }
+    const vaga = vagas.find(function(v) { return v.numero === num; });
+    if (vaga.ocupada) {
+      alert("Esta vaga já está ocupada!");
+      return;
+    }
 
-  function entrar(){
-    let placa = document.getElementById("placa").value.toUpperCase().trim();
-    let num = document.getElementById("entrada").value;
-
-    if(!placa){ alert("Digite a placa"); return; }
-    if(!num){ alert("Escolha a vaga"); return; }
-
-    let v = vagas.find(x => x.num == num);
-    v.livre = false;
-    v.placa = placa;
+    vaga.ocupada = true;
+    vaga.placa = placa;
 
     document.getElementById("placa").value = "";
-    document.getElementById("msg").innerHTML = "Veículo " + placa + " entrou na vaga " + num;
-    mostrar();
+    document.getElementById("mensagem").textContent = "Veículo " + placa + " estacionado na Vaga " + num;
+
+    adicionarHistorico("ENTRADA → " + placa + " na Vaga " + num);
+    atualizarTela();
   }
 
-  function sair(){
-    let num = document.getElementById("saida").value;
-    if(!num){ alert("Escolha a vaga"); return; }
+  function sair() {
+    const num = parseInt(document.getElementById("vagaSaida").value);
 
-    let v = vagas.find(x => x.num == num);
-    document.getElementById("msg").innerHTML = "Veículo " + v.placa + " saiu da vaga " + num;
-    v.livre = true;
-    v.placa = "";
-    mostrar();
+    if (!num) {
+      alert("Selecione uma vaga ocupada!");
+      return;
+    }
+
+    const vaga = vagas.find(function(v) { return v.numero === num; });
+    if (!vaga || !vaga.ocupada) {
+      alert("Esta vaga já está livre!");
+      return;
+    }
+
+    const placa = vaga.placa;
+    vaga.ocupada = false;
+    vaga.placa = null;
+
+    document.getElementById("mensagem").textContent = "Veículo " + placa + " saiu da Vaga " + num;
+    adicionarHistorico("SAÍDA → " + placa + " da Vaga " + num);
+    atualizarTela();
   }
 
-  mostrar();
+  function adicionarHistorico(texto) {
+    const agora = new Date();
+    const hora = agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+    const div = document.createElement("div");
+    div.className = "hist-item";
+    div.innerHTML = texto + "<div class='hist-hora'>" + hora + "</div>";
+
+    const lista = document.getElementById("listaHistorico");
+    lista.insertBefore(div, lista.firstChild);
+  }
+
+  // Inicia o sistema
+  atualizarTela();
 </script>
-
 </body>
 </html>
