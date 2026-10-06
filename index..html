@@ -2,542 +2,209 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Estacionamento</title>
+  <title>Estacionamento Simples</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-    }
-
     body {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #e2e8f0;
-      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #1a1a2e;
+      color: white;
       padding: 20px;
-    }
-
-    .container {
-      max-width: 1100px;
+      max-width: 900px;
       margin: 0 auto;
     }
-
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    header h1 {
-      font-size: 2.2rem;
-      color: #38bdf8;
-      margin-bottom: 8px;
-    }
-
-    header p {
-      color: #94a3b8;
-    }
-
+    h1 { color: #00d4ff; text-align: center; }
     .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      display: flex;
       gap: 15px;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
     }
-
-    .stat-card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 18px;
+    .stat {
+      background: #16213e;
+      padding: 15px 25px;
+      border-radius: 8px;
+      flex: 1;
+      min-width: 120px;
       text-align: center;
     }
+    .stat span { display: block; font-size: 24px; font-weight: bold; margin-top: 5px; }
+    .verde { color: #00ff88; }
+    .vermelho { color: #ff5555; }
+    .azul { color: #00d4ff; }
 
-    .stat-card h3 {
-      font-size: 0.9rem;
-      color: #94a3b8;
-      margin-bottom: 6px;
-    }
-
-    .stat-card .value {
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
-
-    .value.livre { color: #4ade80; }
-    .value.ocupado { color: #f87171; }
-    .value.total { color: #38bdf8; }
-    .value.receita { color: #fbbf24; }
-
-    .main-content {
+    .vagas {
       display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 25px;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+      margin-bottom: 30px;
     }
-
-    @media (max-width: 900px) {
-      .main-content {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .vagas-section {
-      background: #1e293b;
-      border-radius: 16px;
-      padding: 20px;
-      border: 1px solid #334155;
-    }
-
-    .vagas-section h2 {
-      margin-bottom: 15px;
-      color: #38bdf8;
-      font-size: 1.3rem;
-    }
-
-    .vagas-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 12px;
-    }
-
     .vaga {
-      height: 90px;
-      border-radius: 12px;
+      height: 70px;
+      border-radius: 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      font-weight: bold;
       cursor: pointer;
-      transition: all 0.2s;
-      font-weight: 600;
-      border: 2px solid transparent;
-      position: relative;
+      border: 2px solid;
     }
-
-    .vaga.livre {
-      background: #14532d;
-      border-color: #22c55e;
-      color: #4ade80;
+    .livre {
+      background: #0a3d2a;
+      border-color: #00ff88;
+      color: #00ff88;
     }
-
-    .vaga.ocupada {
-      background: #7f1d1d;
-      border-color: #ef4444;
-      color: #fca5a5;
-    }
-
-    .vaga:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-    }
-
-    .vaga .numero {
-      font-size: 1.1rem;
-    }
-
-    .vaga .placa {
-      font-size: 0.75rem;
-      margin-top: 4px;
-      opacity: 0.9;
+    .ocupada {
+      background: #3d0a0a;
+      border-color: #ff5555;
+      color: #ffaaaa;
+      font-size: 12px;
     }
 
     .painel {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .card {
-      background: #1e293b;
-      border-radius: 16px;
+      background: #16213e;
       padding: 20px;
-      border: 1px solid #334155;
-    }
-
-    .card h2 {
-      font-size: 1.2rem;
-      color: #38bdf8;
-      margin-bottom: 15px;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 0.9rem;
-      color: #94a3b8;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 11px 14px;
-      border-radius: 8px;
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: #e2e8f0;
-      font-size: 1rem;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: #38bdf8;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-entrar {
-      background: #22c55e;
-      color: #052e16;
-    }
-
-    .btn-entrar:hover {
-      background: #16a34a;
-    }
-
-    .btn-sair {
-      background: #ef4444;
-      color: white;
-    }
-
-    .btn-sair:hover {
-      background: #dc2626;
-    }
-
-    .historico {
-      max-height: 280px;
-      overflow-y: auto;
-    }
-
-    .historico-item {
-      padding: 10px 0;
-      border-bottom: 1px solid #334155;
-      font-size: 0.9rem;
-    }
-
-    .historico-item:last-child {
-      border-bottom: none;
-    }
-
-    .historico-item .hora {
-      color: #94a3b8;
-      font-size: 0.8rem;
-    }
-
-    .preco-info {
-      background: #0f172a;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 10px;
-      font-size: 0.9rem;
-      color: #94a3b8;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      background: #0f172a;
-      color: white;
-      padding: 14px 20px;
       border-radius: 10px;
-      border-left: 4px solid #38bdf8;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-      transform: translateY(100px);
-      opacity: 0;
-      transition: all 0.3s;
-      z-index: 100;
+      margin-bottom: 20px;
     }
-
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
+    input, select, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
     }
+    input, select { background: #0f3460; color: white; }
+    button {
+      background: #00d4ff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button.sair { background: #ff5555; color: white; }
+    .historico {
+      background: #16213e;
+      padding: 15px;
+      border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+    .historico div { padding: 5px 0; border-bottom: 1px solid #333; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>🅿️ Sistema de Estacionamento</h1>
-      <p>Controle de vagas em tempo real</p>
-    </header>
 
-    <div class="stats">
-      <div class="stat-card">
-        <h3>Total de Vagas</h3>
-        <div class="value total" id="totalVagas">20</div>
-      </div>
-      <div class="stat-card">
-        <h3>Vagas Livres</h3>
-        <div class="value livre" id="vagasLivres">20</div>
-      </div>
-      <div class="stat-card">
-        <h3>Vagas Ocupadas</h3>
-        <div class="value ocupado" id="vagasOcupadas">0</div>
-      </div>
-      <div class="stat-card">
-        <h3>Receita do Dia</h3>
-        <div class="value receita" id="receita">R$ 0,00</div>
-      </div>
-    </div>
+  <h1>🅿️ Estacionamento</h1>
 
-    <div class="main-content">
-      <!-- Grade de Vagas -->
-      <div class="vagas-section">
-        <h2>Mapa de Vagas</h2>
-        <div class="vagas-grid" id="vagasGrid"></div>
-      </div>
-
-      <!-- Painel Lateral -->
-      <div class="painel">
-        <!-- Entrada -->
-        <div class="card">
-          <h2>Entrada de Veículo</h2>
-          <div class="form-group">
-            <label>Placa do Veículo</label>
-            <input type="text" id="placaEntrada" placeholder="ABC1D23" maxlength="8">
-          </div>
-          <div class="form-group">
-            <label>Escolher Vaga</label>
-            <select id="vagaEntrada"></select>
-          </div>
-          <button class="btn-entrar" onclick="entrarVeiculo()">Registrar Entrada</button>
-        </div>
-
-        <!-- Saída -->
-        <div class="card">
-          <h2>Saída de Veículo</h2>
-          <div class="form-group">
-            <label>Selecionar Vaga Ocupada</label>
-            <select id="vagaSaida"></select>
-          </div>
-          <button class="btn-sair" onclick="sairVeiculo()">Registrar Saída</button>
-          <div class="preco-info">
-            <strong>Tabela de Preços:</strong><br>
-            Até 1h → R$ 8,00<br>
-            Até 3h → R$ 15,00<br>
-            Acima de 3h → R$ 5,00/hora extra
-          </div>
-        </div>
-
-        <!-- Histórico -->
-        <div class="card">
-          <h2>Últimas Movimentações</h2>
-          <div class="historico" id="historico"></div>
-        </div>
-      </div>
-    </div>
+  <div class="stats">
+    <div class="stat">Total<br><span class="azul" id="total">12</span></div>
+    <div class="stat">Livres<br><span class="verde" id="livres">12</span></div>
+    <div class="stat">Ocupadas<br><span class="vermelho" id="ocupadas">0</span></div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="vagas" id="vagas"></div>
+
+  <div class="painel">
+    <h3>Entrada</h3>
+    <input type="text" id="placa" placeholder="Placa (ex: ABC1D23)" maxlength="8">
+    <select id="vagaEntrada"></select>
+    <button onclick="entrar()">Registrar Entrada</button>
+  </div>
+
+  <div class="painel">
+    <h3>Saída</h3>
+    <select id="vagaSaida"></select>
+    <button class="sair" onclick="sair()">Registrar Saída</button>
+  </div>
+
+  <h3>Histórico</h3>
+  <div class="historico" id="historico"></div>
 
   <script>
-    // ========== CONFIGURAÇÕES ==========
-    const TOTAL_VAGAS = 20;
-    const PRECO_1H = 8;
-    const PRECO_3H = 15;
-    const PRECO_EXTRA = 5;
-
-    // Estado
+    const TOTAL = 12;
     let vagas = [];
-    let receita = 0;
-    let historico = [];
 
-    // Inicialização
-    function init() {
-      for (let i = 1; i <= TOTAL_VAGAS; i++) {
-        vagas.push({
-          numero: i,
-          ocupada: false,
-          placa: null,
-          entrada: null
-        });
-      }
-      renderVagas();
-      atualizarSelects();
-      atualizarStats();
+    // Criar vagas
+    for (let i = 1; i <= TOTAL; i++) {
+      vagas.push({ num: i, ocupada: false, placa: null });
     }
 
-    // Renderizar grade de vagas
-    function renderVagas() {
-      const grid = document.getElementById('vagasGrid');
-      grid.innerHTML = '';
-
-      vagas.forEach(vaga => {
+    function atualizar() {
+      // Grade de vagas
+      const container = document.getElementById('vagas');
+      container.innerHTML = '';
+      vagas.forEach(v => {
         const div = document.createElement('div');
-        div.className = `vaga ${vaga.ocupada ? 'ocupada' : 'livre'}`;
-        div.innerHTML = `
-          <div class="numero">Vaga ${vaga.numero}</div>
-          ${vaga.ocupada ? `<div class="placa">${vaga.placa}</div>` : ''}
-        `;
-        div.onclick = () => {
-          if (vaga.ocupada) {
-            document.getElementById('vagaSaida').value = vaga.numero;
-          } else {
-            document.getElementById('vagaEntrada').value = vaga.numero;
-          }
-        };
-        grid.appendChild(div);
+        div.className = 'vaga ' + (v.ocupada ? 'ocupada' : 'livre');
+        div.innerHTML = v.ocupada ? `V${v.num}<br>${v.placa}` : `Vaga ${v.num}`;
+        container.appendChild(div);
       });
-    }
 
-    // Atualizar selects
-    function atualizarSelects() {
-      const selectEntrada = document.getElementById('vagaEntrada');
-      const selectSaida = document.getElementById('vagaSaida');
-
-      selectEntrada.innerHTML = '<option value="">Selecione uma vaga livre</option>';
-      selectSaida.innerHTML = '<option value="">Selecione uma vaga ocupada</option>';
+      // Selects
+      const selEnt = document.getElementById('vagaEntrada');
+      const selSai = document.getElementById('vagaSaida');
+      selEnt.innerHTML = '<option value="">Escolha vaga livre</option>';
+      selSai.innerHTML = '<option value="">Escolha vaga ocupada</option>';
 
       vagas.forEach(v => {
         if (!v.ocupada) {
-          selectEntrada.innerHTML += `<option value="${v.numero}">Vaga ${v.numero}</option>`;
+          selEnt.innerHTML += `<option value="${v.num}">Vaga ${v.num}</option>`;
         } else {
-          selectSaida.innerHTML += `<option value="${v.numero}">Vaga ${v.numero} - ${v.placa}</option>`;
+          selSai.innerHTML += `<option value="${v.num}">Vaga ${v.num} - ${v.placa}</option>`;
         }
       });
-    }
 
-    // Atualizar estatísticas
-    function atualizarStats() {
+      // Stats
       const livres = vagas.filter(v => !v.ocupada).length;
-      const ocupadas = TOTAL_VAGAS - livres;
-
-      document.getElementById('totalVagas').textContent = TOTAL_VAGAS;
-      document.getElementById('vagasLivres').textContent = livres;
-      document.getElementById('vagasOcupadas').textContent = ocupadas;
-      document.getElementById('receita').textContent = `R$ ${receita.toFixed(2).replace('.', ',')}`;
+      document.getElementById('total').textContent = TOTAL;
+      document.getElementById('livres').textContent = livres;
+      document.getElementById('ocupadas').textContent = TOTAL - livres;
     }
 
-    // Entrada de veículo
-    function entrarVeiculo() {
-      const placa = document.getElementById('placaEntrada').value.trim().toUpperCase();
-      const numeroVaga = parseInt(document.getElementById('vagaEntrada').value);
+    function entrar() {
+      const placa = document.getElementById('placa').value.trim().toUpperCase();
+      const num = parseInt(document.getElementById('vagaEntrada').value);
 
-      if (!placa) {
-        mostrarToast('Digite a placa do veículo!');
-        return;
-      }
+      if (!placa) { alert('Digite a placa!'); return; }
+      if (!num) { alert('Escolha uma vaga!'); return; }
 
-      if (!numeroVaga) {
-        mostrarToast('Selecione uma vaga!');
-        return;
-      }
-
-      // Verificar se placa já está estacionada
-      if (vagas.some(v => v.ocupada && v.placa === placa)) {
-        mostrarToast('Esta placa já está estacionada!');
-        return;
-      }
-
-      const vaga = vagas.find(v => v.numero === numeroVaga);
-      if (vaga.ocupada) {
-        mostrarToast('Esta vaga já está ocupada!');
-        return;
-      }
+      const vaga = vagas.find(v => v.num === num);
+      if (vaga.ocupada) { alert('Vaga já ocupada!'); return; }
 
       vaga.ocupada = true;
       vaga.placa = placa;
-      vaga.entrada = new Date();
+      document.getElementById('placa').value = '';
 
-      adicionarHistorico(`Entrada: ${placa} na Vaga ${numeroVaga}`);
-      document.getElementById('placaEntrada').value = '';
-
-      renderVagas();
-      atualizarSelects();
-      atualizarStats();
-      mostrarToast(`Veículo ${placa} estacionado na Vaga ${numeroVaga}`);
+      adicionarHist(`ENTRADA → ${placa} na Vaga ${num}`);
+      atualizar();
     }
 
-    // Saída de veículo
-    function sairVeiculo() {
-      const numeroVaga = parseInt(document.getElementById('vagaSaida').value);
+    function sair() {
+      const num = parseInt(document.getElementById('vagaSaida').value);
+      if (!num) { alert('Escolha uma vaga ocupada!'); return; }
 
-      if (!numeroVaga) {
-        mostrarToast('Selecione uma vaga ocupada!');
-        return;
-      }
+      const vaga = vagas.find(v => v.num === num);
+      if (!vaga.ocupada) { alert('Vaga já está livre!'); return; }
 
-      const vaga = vagas.find(v => v.numero === numeroVaga);
-      if (!vaga.ocupada) {
-        mostrarToast('Esta vaga já está livre!');
-        return;
-      }
-
-      const agora = new Date();
-      const minutos = Math.floor((agora - vaga.entrada) / 60000);
-      const horas = minutos / 60;
-
-      let valor = 0;
-      if (horas <= 1) {
-        valor = PRECO_1H;
-      } else if (horas <= 3) {
-        valor = PRECO_3H;
-      } else {
-        valor = PRECO_3H + Math.ceil(horas - 3) * PRECO_EXTRA;
-      }
-
-      receita += valor;
-
-      const tempoFormatado = minutos < 60 
-        ? `${minutos} min` 
-        : `${Math.floor(horas)}h ${minutos % 60}min`;
-
-      adicionarHistorico(
-        `Saída: ${vaga.placa} (Vaga ${numeroVaga}) — ${tempoFormatado} — R$ ${valor.toFixed(2).replace('.', ',')}`
-      );
-
-      mostrarToast(`Saída registrada! Valor: R$ ${valor.toFixed(2).replace('.', ',')}`);
-
-      // Liberar vaga
+      adicionarHist(`SAÍDA → ${vaga.placa} da Vaga ${num}`);
       vaga.ocupada = false;
       vaga.placa = null;
-      vaga.entrada = null;
-
-      renderVagas();
-      atualizarSelects();
-      atualizarStats();
+      atualizar();
     }
 
-    // Histórico
-    function adicionarHistorico(texto) {
-      const agora = new Date();
-      const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-      historico.unshift({ texto, hora });
-      if (historico.length > 15) historico.pop();
-
-      const container = document.getElementById('historico');
-      container.innerHTML = historico.map(h => `
-        <div class="historico-item">
-          <div>${h.texto}</div>
-          <div class="hora">${h.hora}</div>
-        </div>
-      `).join('');
-    }
-
-    // Toast
-    function mostrarToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
+    function adicionarHist(texto) {
+      const agora = new Date().toLocaleTimeString('pt-BR');
+      const div = document.createElement('div');
+      div.textContent = `[${agora}] ${texto}`;
+      document.getElementById('historico').prepend(div);
     }
 
     // Iniciar
-    init();
+    atualizar();
   </script>
 </body>
 </html>
