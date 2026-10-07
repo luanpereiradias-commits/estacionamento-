@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Estacionamento</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            color: #00d9ff;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #aaa;
+        }
+
+        .painel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .painel {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            color: #00d9ff;
+            border-bottom: 2px solid #00d9ff;
+            padding-bottom: 8px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            background: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 0 0 2px #00d9ff;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-entrar {
+            background: #00c853;
+            color: #fff;
+        }
+
+        .btn-entrar:hover {
+            background: #00a844;
+            transform: translateY(-2px);
+        }
+
+        .btn-sair {
+            background: #ff5252;
+            color: #fff;
+        }
+
+        .btn-sair:hover {
+            background: #e04848;
+            transform: translateY(-2px);
+        }
+
+        .vagas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .vaga {
+            height: 70px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.25s;
+            border: 2px solid transparent;
+        }
+
+        .vaga.livre {
+            background: #1b5e20;
+            color: #a5d6a7;
+        }
+
+        .vaga.ocupada {
+            background: #b71c1c;
+            color: #ffcdd2;
+        }
+
+        .vaga:hover {
+            transform: scale(1.05);
+            border-color: #00d9ff;
+        }
+
+        .vaga small {
+            font-size: 0.7rem;
+            margin-top: 3px;
+            opacity: 0.9;
+        }
+
+        .resumo {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .resumo div {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 25px;
+            border-radius: 12px;
+        }
+
+        .resumo span {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00d9ff;
+        }
+
+        .historico {
+            max-height: 280px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .historico-item {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .historico-item.entrada {
+            border-left: 4px solid #00c853;
+        }
+
+        .historico-item.saida {
+            border-left: 4px solid #ff5252;
+        }
+
+        .valor {
+            color: #ffeb3b;
+            font-weight: 600;
+        }
+
+        .msg {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .msg.sucesso {
+            background: #1b5e20;
+            display: block;
+        }
+
+        .msg.erro {
+            background: #b71c1c;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🅿️ Sistema de Estacionamento</h1>
+        <p class="subtitle">Gerenciamento de vagas • R$ 5,00 / hora</p>
+
+        <div id="mensagem" class="msg"></div>
+
+        <div class="painel">
+            <!-- Entrada -->
+            <div class="card">
+                <h2>Entrada de Veículo</h2>
+                <label for="placa">Placa do veículo</label>
+                <input type="text" id="placa" placeholder="ABC1D23" maxlength="7">
+
+                <label for="tipo">Tipo de veículo</label>
+                <select id="tipo">
+                    <option value="Carro">Carro</option>
+                    <option value="Moto">Moto</option>
+                    <option value="Van">Van</option>
+                </select>
+
+                <button class="btn-entrar" onclick="entrarVeiculo()">Registrar Entrada</button>
+            </div>
+
+            <!-- Saída -->
+            <div class="card">
+                <h2>Saída de Veículo</h2>
+                <label for="placaSaida">Placa do veículo</label>
+                <input type="text" id="placaSaida" placeholder="ABC1D23" maxlength="7">
+
+                <button class="btn-sair" onclick="sairVeiculo()">Registrar Saída</button>
+            </div>
+        </div>
+
+        <!-- Resumo -->
+        <div class="card">
+            <h2>Status das Vagas</h2>
+            <div class="resumo">
+                <div>
+                    <span id="totalVagas">20</span>
+                    Total
+                </div>
+                <div>
+                    <span id="vagasLivres">20</span>
+                    Livres
+                </div>
+                <div>
+                    <span id="vagasOcupadas">0</span>
+                    Ocupadas
+                </div>
+            </div>
+
+            <div class="vagas-grid" id="vagasGrid"></div>
+        </div>
+
+        <!-- Histórico -->
+        <div class="card" style="margin-top: 20px;">
+            <h2>Histórico de Movimentações</h2>
+            <div class="historico" id="historico"></div>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL_VAGAS = 20;
+        const VALOR_HORA = 5.00;
+
+        let vagas = [];
+        let historico = [];
+
+        // Carrega dados salvos
+        function carregarDados() {
+            const dados = localStorage.getItem('estacionamento');
+            if (dados) {
+                const parsed = JSON.parse(dados);
+                vagas = parsed.vagas || [];
+                historico = parsed.historico || [];
+            } else {
+                // Inicializa vagas vazias
+                for (let i = 1; i <= TOTAL_VAGAS; i++) {
+                    vagas.push({
+                        numero: i,
+                        ocupada: false,
+                        placa: null,
+                        tipo: null,
+                        entrada: null
+                    });
+                }
+            }
+            atualizarInterface();
+        }
+
+        function salvarDados() {
+            localStorage.setItem('estacionamento', JSON.stringify({
+                vagas,
+                historico
+            }));
+        }
+
+        function mostrarMensagem(texto, tipo) {
+            const msg = document.getElementById('mensagem');
+            msg.textContent = texto;
+            msg.className = `msg ${tipo}`;
+            setTimeout(() => {
+                msg.className = 'msg';
+            }, 3500);
+        }
+
+        function atualizarInterface() {
+            // Atualiza contadores
+            const livres = vagas.filter(v => !v.ocupada).length;
+            document.getElementById('vagasLivres').textContent = livres;
+            document.getElementById('vagasOcupadas').textContent = TOTAL_VAGAS - livres;
+
+            // Grade de vagas
+            const grid = document.getElementById('vagasGrid');
+            grid.innerHTML = '';
+
+            vagas.forEach(vaga => {
+                const div = document.createElement('div');
+                div.className = `vaga ${vaga.ocupada ? 'ocupada' : 'livre'}`;
+                div.innerHTML = `
+                    <div>Vaga ${vaga.numero}</div>
+                    ${vaga.ocupada ? `<small>${vaga.placa}</small>` : '<small>Livre</small>'}
+                `;
+                grid.appendChild(div);
+            });
+
+            // Histórico
+            const histDiv = document.getElementById('historico');
+            histDiv.innerHTML = '';
+
+            if (historico.length === 0) {
+                histDiv.innerHTML = '<p style="text-align:center;color:#888;">Nenhuma movimentação ainda</p>';
+            } else {
+                // Mostra do mais recente para o mais antigo
+                [...historico].reverse().forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = `historico-item ${item.tipo}`;
+                    div.innerHTML = `
+                        <div>
+                            <strong>${item.placa}</strong> • ${item.veiculoTipo}<br>
+                            <small>${item.descricao}</small>
+                        </div>
+                        <div style="text-align:right">
+                            ${item.valor ? `<span class="valor">R$ ${item.valor}</span><br>` : ''}
+                            <small>${item.hora}</small>
+                        </div>
+                    `;
+                    histDiv.appendChild(div);
+                });
+            }
+        }
+
+        function entrarVeiculo() {
+            const placa = document.getElementById('placa').value.trim().toUpperCase();
+            const tipo = document.getElementById('tipo').value;
+
+            if (!placa || placa.length < 6) {
+                mostrarMensagem('Informe uma placa válida!', 'erro');
+                return;
+            }
+
+            // Verifica se a placa já está estacionada
+            if (vagas.some(v => v.ocupada && v.placa === placa)) {
+                mostrarMensagem('Este veículo já está estacionado!', 'erro');
+                return;
+            }
+
+            // Procura vaga livre
+            const vagaLivre = vagas.find(v => !v.ocupada);
+            if (!vagaLivre) {
+                mostrarMensagem('Estacionamento lotado!', 'erro');
+                return;
+            }
+
+            // Ocupa a vaga
+            vagaLivre.ocupada = true;
+            vagaLivre.placa = placa;
+            vagaLivre.tipo = tipo;
+            vagaLivre.entrada = new Date();
+
+            historico.push({
+                tipo: 'entrada',
+                placa: placa,
+                veiculoTipo: tipo,
+                descricao: `Entrou na Vaga ${vagaLivre.numero}`,
+                hora: new Date().toLocaleString('pt-BR'),
+                valor: null
+            });
+
+            salvarDados();
+            atualizarInterface();
+
+            document.getElementById('placa').value = '';
+            mostrarMensagem(`Veículo ${placa} estacionado na Vaga ${vagaLivre.numero}!`, 'sucesso');
+        }
+
+        function sairVeiculo() {
+            const placa = document.getElementById('placaSaida').value.trim().toUpperCase();
+
+            if (!placa) {
+                mostrarMensagem('Informe a placa do veículo!', 'erro');
+                return;
+            }
+
+            const vaga = vagas.find(v => v.ocupada && v.placa === placa);
+            if (!vaga) {
+                mostrarMensagem('Veículo não encontrado no estacionamento!', 'erro');
+                return;
+            }
+
+            // Calcula tempo e valor
+            const agora = new Date();
+            const entrada = new Date(vaga.entrada);
+            const horas = Math.max(1, Math.ceil((agora - entrada) / (1000 * 60 * 60))); // mínimo 1 hora
+            const valor = (horas * VALOR_HORA).toFixed(2);
+
+            // Libera a vaga
+            const numeroVaga = vaga.numero;
+            vaga.ocupada = false;
+            vaga.placa = null;
+            vaga.tipo = null;
+            vaga.entrada = null;
+
+            historico.push({
+                tipo: 'saida',
+                placa: placa,
+                veiculoTipo: vaga.tipo || 'Veículo',
+                descricao: `Saiu da Vaga ${numeroVaga} • ${horas}h`,
+                hora: agora.toLocaleString('pt-BR'),
+                valor: valor
+            });
+
+            salvarDados();
+            atualizarInterface();
+
+            document.getElementById('placaSaida').value = '';
+            mostrarMensagem(`Saída registrada! Valor a pagar: R$ ${valor}`, 'sucesso');
+        }
+
+        // Inicializa o sistema
+        carregarDados();
+    </script>
+</body>
+</html>
