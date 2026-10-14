@@ -3,108 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Estacionamento</title>
+    <title>Sistema de Estacionamento Pro</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
             min-height: 100vh;
+            color: #e2e8f0;
             padding: 20px;
-            color: #333;
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         header {
             text-align: center;
-            color: white;
             margin-bottom: 30px;
         }
 
         header h1 {
-            font-size: 2.4rem;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         header p {
-            opacity: 0.9;
+            color: #94a3b8;
             font-size: 1.1rem;
         }
 
+        /* Stats */
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
-            background: white;
-            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
         }
 
         .stat-card h3 {
-            font-size: 0.95rem;
-            color: #666;
+            font-size: 0.9rem;
+            color: #94a3b8;
             margin-bottom: 8px;
+            font-weight: 500;
         }
 
         .stat-card .number {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             font-weight: 700;
         }
 
-        .stat-card.total .number { color: #2a5298; }
-        .stat-card.livre .number { color: #28a745; }
-        .stat-card.ocupada .number { color: #dc3545; }
+        .stat-card.total .number { color: #60a5fa; }
+        .stat-card.livre .number { color: #34d399; }
+        .stat-card.ocupada .number { color: #f87171; }
+        .stat-card.receita .number { color: #fbbf24; }
 
-        .main-content {
+        /* Layout principal */
+        .main {
             display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 25px;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
         }
 
-        @media (max-width: 900px) {
-            .main-content {
+        @media (max-width: 950px) {
+            .main {
                 grid-template-columns: 1fr;
             }
         }
 
-        .parking-area, .controls {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        .card {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 20px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
         }
 
-        .parking-area h2, .controls h2 {
+        .card h2 {
+            font-size: 1.25rem;
             margin-bottom: 20px;
-            color: #1e3c72;
-            font-size: 1.3rem;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
+        /* Grade de vagas */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
             gap: 12px;
         }
 
-        .spot {
+        .vaga {
             aspect-ratio: 1;
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -112,183 +128,244 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.25s ease;
-            border: 3px solid transparent;
+            border: 2px solid transparent;
             position: relative;
             font-size: 0.95rem;
         }
 
-        .spot.livre {
-            background: #d4edda;
-            color: #155724;
-            border-color: #28a745;
+        .vaga.livre {
+            background: rgba(52, 211, 153, 0.15);
+            border-color: #34d399;
+            color: #34d399;
         }
 
-        .spot.ocupada {
-            background: #f8d7da;
-            color: #721c24;
-            border-color: #dc3545;
+        .vaga.ocupada {
+            background: rgba(248, 113, 113, 0.15);
+            border-color: #f87171;
+            color: #f87171;
         }
 
-        .spot:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        .vaga:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
 
-        .spot.selected {
-            border-color: #ffc107;
-            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.4);
+        .vaga.selecionada {
+            border-color: #fbbf24 !important;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.4);
         }
 
-        .spot .placa {
-            font-size: 0.75rem;
+        .vaga .placa {
+            font-size: 0.7rem;
             margin-top: 4px;
-            font-weight: 500;
-            max-width: 80px;
+            opacity: 0.9;
+            max-width: 75px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
+        /* Controles */
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 6px;
-            font-weight: 600;
-            color: #444;
+            font-size: 0.9rem;
+            color: #94a3b8;
         }
 
-        .form-group input {
+        input, select {
             width: 100%;
             padding: 12px 14px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 10px;
+            color: #f1f5f9;
             font-size: 1rem;
             transition: border-color 0.2s;
         }
 
-        .form-group input:focus {
+        input:focus, select:focus {
             outline: none;
-            border-color: #2a5298;
+            border-color: #60a5fa;
         }
 
-        .btn {
-            width: 100%;
+        .botoes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
             padding: 13px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            margin-bottom: 10px;
-        }
-
-        .btn-park {
-            background: #28a745;
             color: white;
         }
 
-        .btn-park:hover {
-            background: #218838;
+        .btn-estacionar {
+            background: linear-gradient(135deg, #10b981, #059669);
         }
 
-        .btn-exit {
-            background: #dc3545;
-            color: white;
+        .btn-estacionar:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
         }
 
-        .btn-exit:hover {
-            background: #c82333;
+        .btn-liberar {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
         }
 
-        .btn:disabled {
-            background: #ccc;
+        .btn-liberar:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-liberar:disabled {
+            background: #475569;
             cursor: not-allowed;
+            transform: none;
+            filter: none;
         }
 
-        .info {
-            background: #e9f0ff;
-            border-radius: 8px;
-            padding: 12px;
+        .btn-buscar {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .mensagem {
+            margin-top: 18px;
+            padding: 12px 14px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 10px;
             font-size: 0.9rem;
-            color: #1e3c72;
-            margin-top: 15px;
+            color: #93c5fd;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
         }
 
+        /* Histórico */
         .historico {
-            margin-top: 25px;
-            max-height: 220px;
+            margin-top: 24px;
+            max-height: 280px;
             overflow-y: auto;
         }
 
         .historico h3 {
+            font-size: 1rem;
             margin-bottom: 12px;
-            color: #1e3c72;
+            color: #94a3b8;
         }
 
-        .log-item {
-            background: #f8f9fa;
+        .log {
+            background: rgba(15, 23, 42, 0.5);
             padding: 10px 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-bottom: 8px;
-            font-size: 0.88rem;
-            border-left: 4px solid #2a5298;
+            font-size: 0.85rem;
+            border-left: 3px solid #3b82f6;
+            animation: fadeIn 0.3s ease;
         }
 
-        .log-item.entrada { border-left-color: #28a745; }
-        .log-item.saida { border-left-color: #dc3545; }
+        .log.entrada { border-left-color: #34d399; }
+        .log.saida { border-left-color: #f87171; }
+
+        .log .hora {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar */
+        .historico::-webkit-scrollbar {
+            width: 6px;
+        }
+        .historico::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .historico::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🅿️ Sistema de Estacionamento</h1>
-            <p>Gerencie as vagas de forma simples e rápida</p>
+            <h1>🅿️ Estacionamento Pro</h1>
+            <p>Sistema inteligente de gerenciamento de vagas</p>
         </header>
 
+        <!-- Estatísticas -->
         <div class="stats">
             <div class="stat-card total">
                 <h3>Total de Vagas</h3>
-                <div class="number" id="total">20</div>
+                <div class="number" id="total">24</div>
             </div>
             <div class="stat-card livre">
                 <h3>Vagas Livres</h3>
-                <div class="number" id="livres">20</div>
+                <div class="number" id="livres">24</div>
             </div>
             <div class="stat-card ocupada">
-                <h3>Vagas Ocupadas</h3>
+                <h3>Ocupadas</h3>
                 <div class="number" id="ocupadas">0</div>
+            </div>
+            <div class="stat-card receita">
+                <h3>Receita Estimada</h3>
+                <div class="number" id="receita">R$ 0</div>
             </div>
         </div>
 
-        <div class="main-content">
-            <!-- Grade de Vagas -->
-            <div class="parking-area">
-                <h2>Mapa de Vagas</h2>
+        <div class="main">
+            <!-- Mapa de Vagas -->
+            <div class="card">
+                <h2>🗺️ Mapa de Vagas</h2>
                 <div class="grid" id="grid"></div>
             </div>
 
-            <!-- Controles -->
-            <div class="controls">
-                <h2>Controles</h2>
+            <!-- Painel de Controle -->
+            <div class="card">
+                <h2>🎛️ Controles</h2>
 
                 <div class="form-group">
-                    <label for="placa">Placa do Veículo</label>
+                    <label>Placa do Veículo</label>
                     <input type="text" id="placa" placeholder="Ex: ABC1D23" maxlength="8">
                 </div>
 
-                <button class="btn btn-park" id="btnPark" onclick="estacionar()">Estacionar</button>
-                <button class="btn btn-exit" id="btnExit" onclick="liberar()" disabled>Liberar Vaga</button>
+                <div class="form-group">
+                    <label>Tipo de Veículo</label>
+                    <select id="tipo">
+                        <option value="carro">🚗 Carro</option>
+                        <option value="moto">🏍️ Moto</option>
+                        <option value="suv">🚙 SUV / Caminhonete</option>
+                    </select>
+                </div>
 
-                <div class="info" id="info">
-                    Clique em uma vaga livre ou preencha a placa e clique em <strong>Estacionar</strong>.
+                <div class="botoes">
+                    <button class="btn-estacionar" onclick="estacionar()">Estacionar Veículo</button>
+                    <button class="btn-liberar" id="btnLiberar" onclick="liberar()" disabled>Liberar Vaga</button>
+                    <button class="btn-buscar" onclick="buscarPlaca()">🔍 Buscar Placa</button>
+                </div>
+
+                <div class="mensagem" id="mensagem">
+                    Selecione uma vaga ou digite a placa e clique em Estacionar
                 </div>
 
                 <div class="historico">
-                    <h3>Histórico</h3>
+                    <h3>📋 Histórico Recente</h3>
                     <div id="logs"></div>
                 </div>
             </div>
@@ -296,86 +373,108 @@
     </div>
 
     <script>
-        // Configuração
-        const TOTAL_VAGAS = 20;
+        const TOTAL_VAGAS = 24;
+        const PRECO_HORA = 8; // R$ por hora
+
         let vagas = [];
         let vagaSelecionada = null;
+        let historico = [];
 
-        // Inicializa as vagas
-        function init() {
-            for (let i = 1; i <= TOTAL_VAGAS; i++) {
-                vagas.push({
-                    numero: i,
-                    ocupada: false,
-                    placa: null,
-                    entrada: null
-                });
+        // Carrega dados salvos
+        function carregarDados() {
+            const dados = localStorage.getItem('estacionamento_pro');
+            if (dados) {
+                const parsed = JSON.parse(dados);
+                vagas = parsed.vagas || [];
+                historico = parsed.historico || [];
             }
-            renderGrid();
-            atualizarStats();
+
+            // Garante que todas as vagas existam
+            if (vagas.length === 0) {
+                for (let i = 1; i <= TOTAL_VAGAS; i++) {
+                    vagas.push({
+                        numero: i,
+                        ocupada: false,
+                        placa: null,
+                        tipo: null,
+                        entrada: null
+                    });
+                }
+            }
         }
 
-        // Renderiza a grade
-        function renderGrid() {
+        // Salva no navegador
+        function salvarDados() {
+            localStorage.setItem('estacionamento_pro', JSON.stringify({
+                vagas,
+                historico
+            }));
+        }
+
+        // Desenha a grade
+        function desenhar() {
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
 
             vagas.forEach(vaga => {
                 const div = document.createElement('div');
-                div.className = `spot ${vaga.ocupada ? 'ocupada' : 'livre'}`;
+                div.className = `vaga ${vaga.ocupada ? 'ocupada' : 'livre'}`;
                 if (vagaSelecionada === vaga.numero) {
-                    div.classList.add('selected');
+                    div.classList.add('selecionada');
                 }
 
                 div.innerHTML = `
-                    <span>V${vaga.numero.toString().padStart(2, '0')}</span>
+                    <span>V${String(vaga.numero).padStart(2, '0')}</span>
                     ${vaga.ocupada ? `<span class="placa">${vaga.placa}</span>` : ''}
                 `;
 
-                div.onclick = () => selecionarVaga(vaga.numero);
+                div.onclick = () => selecionar(vaga.numero);
                 grid.appendChild(div);
             });
+
+            atualizarStats();
+            renderHistorico();
         }
 
-        // Seleciona uma vaga
-        function selecionarVaga(numero) {
+        // Seleciona vaga
+        function selecionar(numero) {
             vagaSelecionada = numero;
-            renderGrid();
-
             const vaga = vagas.find(v => v.numero === numero);
-            const btnExit = document.getElementById('btnExit');
-            const info = document.getElementById('info');
+            const btn = document.getElementById('btnLiberar');
+            const msg = document.getElementById('mensagem');
 
             if (vaga.ocupada) {
-                btnExit.disabled = false;
-                info.innerHTML = `Vaga <strong>V${numero.toString().padStart(2, '0')}</strong> ocupada por <strong>${vaga.placa}</strong>. Clique em <strong>Liberar Vaga</strong>.`;
+                btn.disabled = false;
+                const tempo = calcularTempo(vaga.entrada);
+                const valor = calcularValor(vaga.entrada);
+                msg.innerHTML = `
+                    <strong>V${String(numero).padStart(2,'0')}</strong> — ${vaga.placa} (${vaga.tipo})<br>
+                    Tempo: ${tempo} | Valor: R$ ${valor.toFixed(2)}
+                `;
             } else {
-                btnExit.disabled = true;
-                info.innerHTML = `Vaga <strong>V${numero.toString().padStart(2, '0')}</strong> selecionada. Preencha a placa e clique em <strong>Estacionar</strong>.`;
+                btn.disabled = true;
+                msg.innerHTML = `Vaga <strong>V${String(numero).padStart(2,'0')}</strong> selecionada. Digite a placa e clique em Estacionar.`;
             }
+
+            desenhar();
         }
 
-        // Estacionar veículo
+        // Estacionar
         function estacionar() {
             const placaInput = document.getElementById('placa');
-            let placa = placaInput.value.trim().toUpperCase();
+            let placa = placaInput.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+            const tipo = document.getElementById('tipo').value;
 
-            if (!placa) {
-                alert('Digite a placa do veículo!');
+            if (placa.length < 7) {
+                alert('Digite uma placa válida (ex: ABC1D23)');
                 placaInput.focus();
                 return;
             }
 
-            // Validação simples de placa
-            if (placa.length < 7) {
-                alert('Placa inválida! Use o formato ABC1D23 ou ABC-1234');
-                return;
-            }
-
-            // Verifica se a placa já está estacionada
-            const jaEstacionado = vagas.find(v => v.ocupada && v.placa === placa);
-            if (jaEstacionado) {
-                alert(`O veículo ${placa} já está estacionado na vaga V${jaEstacionado.numero.toString().padStart(2, '0')}!`);
+            // Já estacionado?
+            const existe = vagas.find(v => v.ocupada && v.placa === placa);
+            if (existe) {
+                alert(`O veículo ${placa} já está na vaga V${String(existe.numero).padStart(2,'0')}!`);
                 return;
             }
 
@@ -388,7 +487,6 @@
                     return;
                 }
             } else {
-                // Encontra a primeira vaga livre
                 vaga = vagas.find(v => !v.ocupada);
                 if (!vaga) {
                     alert('Estacionamento lotado!');
@@ -396,24 +494,25 @@
                 }
             }
 
-            // Ocupa a vaga
             vaga.ocupada = true;
             vaga.placa = placa;
-            vaga.entrada = new Date();
+            vaga.tipo = tipo;
+            vaga.entrada = new Date().toISOString();
 
-            // Limpa campos
             placaInput.value = '';
             vagaSelecionada = null;
-            document.getElementById('btnExit').disabled = true;
+            document.getElementById('btnLiberar').disabled = true;
 
-            renderGrid();
-            atualizarStats();
-            adicionarLog('entrada', `Veículo ${placa} estacionado na vaga V${vaga.numero.toString().padStart(2, '0')}`);
+            adicionarLog('entrada', `🚗 ${placa} entrou na V${String(vaga.numero).padStart(2,'0')} (${tipo})`);
+            document.getElementById('mensagem').innerHTML = `
+                ✅ Veículo <strong>${placa}</strong> estacionado com sucesso na <strong>V${String(vaga.numero).padStart(2,'0')}</strong>!
+            `;
 
-            document.getElementById('info').innerHTML = `Veículo <strong>${placa}</strong> estacionado com sucesso na vaga <strong>V${vaga.numero.toString().padStart(2, '0')}</strong>!`;
+            salvarDados();
+            desenhar();
         }
 
-        // Liberar vaga
+        // Liberar
         function liberar() {
             if (!vagaSelecionada) return;
 
@@ -422,59 +521,117 @@
 
             const placa = vaga.placa;
             const tempo = calcularTempo(vaga.entrada);
+            const valor = calcularValor(vaga.entrada);
 
             vaga.ocupada = false;
             vaga.placa = null;
+            vaga.tipo = null;
             vaga.entrada = null;
 
             vagaSelecionada = null;
-            document.getElementById('btnExit').disabled = true;
+            document.getElementById('btnLiberar').disabled = true;
 
-            renderGrid();
-            atualizarStats();
-            adicionarLog('saida', `Veículo ${placa} saiu da vaga V${vaga.numero.toString().padStart(2, '0')} (tempo: ${tempo})`);
+            adicionarLog('saida', `🚪 ${placa} saiu da V${String(vaga.numero).padStart(2,'0')} — ${tempo} — R$ ${valor.toFixed(2)}`);
+            document.getElementById('mensagem').innerHTML = `
+                ✅ Vaga liberada!<br>
+                Veículo <strong>${placa}</strong> permaneceu <strong>${tempo}</strong><br>
+                Valor estimado: <strong>R$ ${valor.toFixed(2)}</strong>
+            `;
 
-            document.getElementById('info').innerHTML = `Vaga <strong>V${vaga.numero.toString().padStart(2, '0')}</strong> liberada. Veículo <strong>${placa}</strong> permaneceu ${tempo}.`;
+            salvarDados();
+            desenhar();
         }
 
-        // Calcula tempo de permanência
-        function calcularTempo(entrada) {
+        // Buscar placa
+        function buscarPlaca() {
+            const placa = document.getElementById('placa').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (!placa) {
+                alert('Digite a placa para buscar');
+                return;
+            }
+
+            const vaga = vagas.find(v => v.ocupada && v.placa === placa);
+            if (vaga) {
+                selecionar(vaga.numero);
+                document.getElementById('mensagem').innerHTML = `
+                    🔍 Encontrado! <strong>${placa}</strong> está na vaga <strong>V${String(vaga.numero).padStart(2,'0')}</strong>
+                `;
+            } else {
+                document.getElementById('mensagem').innerHTML = `❌ Placa <strong>${placa}</strong> não encontrada no estacionamento.`;
+            }
+        }
+
+        // Cálculos
+        function calcularTempo(entradaISO) {
+            if (!entradaISO) return '0min';
+            const entrada = new Date(entradaISO);
             const agora = new Date();
-            const diff = Math.floor((agora - entrada) / 1000); // em segundos
+            const diff = Math.floor((agora - entrada) / 1000);
 
             if (diff < 60) return `${diff}s`;
             if (diff < 3600) return `${Math.floor(diff / 60)}min`;
-            const horas = Math.floor(diff / 3600);
-            const minutos = Math.floor((diff % 3600) / 60);
-            return `${horas}h ${minutos}min`;
+            const h = Math.floor(diff / 3600);
+            const m = Math.floor((diff % 3600) / 60);
+            return `${h}h ${m}min`;
         }
 
-        // Atualiza contadores
+        function calcularValor(entradaISO) {
+            if (!entradaISO) return 0;
+            const entrada = new Date(entradaISO);
+            const agora = new Date();
+            const horas = (agora - entrada) / (1000 * 60 * 60);
+            // Cobrança mínima de 1 hora
+            return Math.max(1, Math.ceil(horas)) * PRECO_HORA;
+        }
+
+        // Stats
         function atualizarStats() {
             const ocupadas = vagas.filter(v => v.ocupada).length;
             document.getElementById('livres').textContent = TOTAL_VAGAS - ocupadas;
             document.getElementById('ocupadas').textContent = ocupadas;
+
+            // Receita estimada (soma de todos os veículos atualmente estacionados)
+            let receita = 0;
+            vagas.forEach(v => {
+                if (v.ocupada) receita += calcularValor(v.entrada);
+            });
+            document.getElementById('receita').textContent = `R$ ${receita.toFixed(0)}`;
         }
 
-        // Adiciona log no histórico
-        function adicionarLog(tipo, mensagem) {
-            const logs = document.getElementById('logs');
-            const agora = new Date().toLocaleTimeString('pt-BR');
+        // Histórico
+        function adicionarLog(tipo, texto) {
+            historico.unshift({
+                tipo,
+                texto,
+                hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            });
+            if (historico.length > 20) historico.pop();
+            salvarDados();
+        }
 
-            const item = document.createElement('div');
-            item.className = `log-item ${tipo}`;
-            item.innerHTML = `<strong>${agora}</strong> — ${mensagem}`;
+        function renderHistorico() {
+            const container = document.getElementById('logs');
+            container.innerHTML = '';
 
-            logs.insertBefore(item, logs.firstChild);
-
-            // Limita a 15 logs
-            if (logs.children.length > 15) {
-                logs.removeChild(logs.lastChild);
+            if (historico.length === 0) {
+                container.innerHTML = '<div style="color:#64748b;font-size:0.85rem">Nenhuma operação ainda</div>';
+                return;
             }
+
+            historico.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `log ${item.tipo}`;
+                div.innerHTML = `
+                    <div class="hora">${item.hora}</div>
+                    ${item.texto}
+                `;
+                container.appendChild(div);
+            });
         }
 
-        // Inicia o sistema
-        init();
+        // Inicialização
+        carregarDados();
+        desenhar();
     </script>
 </body>
 </html>
