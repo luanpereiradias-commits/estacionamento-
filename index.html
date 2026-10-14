@@ -1,600 +1,614 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Estacionamento</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Estacionamento</title>
+<style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+    body{background:#111827;color:#e5e7eb;min-height:100vh;padding:12px}
 
-        body {
-            background: #0f172a;
-            color: #e2e8f0;
-            min-height: 100vh;
-            padding: 16px;
-        }
+    .container{max-width:1400px;margin:0 auto}
 
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-        }
+    /* TOPO */
+    .topo{
+        background:#1f2937;
+        border:1px solid #374151;
+        border-radius:10px;
+        padding:12px 20px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:14px;
+        flex-wrap:wrap;
+        gap:10px;
+    }
+    .topo h1{font-size:1.3rem;color:#38bdf8;font-weight:600}
+    .topo-info{display:flex;gap:24px;font-size:0.95rem}
+    .topo-info b{color:#f9fafb}
 
-        /* Cabeçalho */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #1e293b;
-            padding: 16px 24px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #334155;
-        }
+    /* STATUS RÁPIDO */
+    .status-bar{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:10px;
+        margin-bottom:14px;
+    }
+    @media(max-width:700px){.status-bar{grid-template-columns:repeat(2,1fr)}}
+    .status-box{
+        background:#1f2937;
+        border:1px solid #374151;
+        border-radius:10px;
+        padding:14px;
+        text-align:center;
+    }
+    .status-box .label{font-size:0.78rem;color:#9ca3af;margin-bottom:4px}
+    .status-box .num{font-size:1.7rem;font-weight:700}
+    .verde{color:#34d399}
+    .vermelho{color:#f87171}
+    .azul{color:#60a5fa}
+    .amarelo{color:#fbbf24}
 
-        .header h1 {
-            font-size: 1.5rem;
-            color: #38bdf8;
-        }
+    /* LAYOUT */
+    .layout{
+        display:grid;
+        grid-template-columns:1fr 420px;
+        gap:14px;
+    }
+    @media(max-width:1100px){.layout{grid-template-columns:1fr}}
 
-        .header .status {
-            display: flex;
-            gap: 20px;
-            font-size: 0.95rem;
-        }
+    .painel{
+        background:#1f2937;
+        border:1px solid #374151;
+        border-radius:10px;
+        padding:16px;
+    }
+    .painel h2{
+        font-size:0.95rem;
+        color:#9ca3af;
+        margin-bottom:12px;
+        font-weight:600;
+        text-transform:uppercase;
+        letter-spacing:0.5px;
+    }
 
-        .status-item span {
-            font-weight: 700;
-            color: #f1f5f9;
-        }
+    /* FILTRO SETOR */
+    .filtros{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+    .filtro{
+        padding:6px 12px;
+        background:#111827;
+        border:1px solid #4b5563;
+        border-radius:6px;
+        color:#9ca3af;
+        font-size:0.82rem;
+        cursor:pointer;
+        font-weight:600;
+    }
+    .filtro.ativo{background:#0369a1;color:white;border-color:#0ea5e9}
 
-        /* Layout principal */
-        .main {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 20px;
-        }
+    /* GRADE */
+    .grade{
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(72px,1fr));
+        gap:8px;
+        max-height:520px;
+        overflow-y:auto;
+        padding-right:4px;
+    }
+    .vaga{
+        height:68px;
+        border-radius:8px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        font-size:0.85rem;
+        font-weight:600;
+        cursor:pointer;
+        border:2px solid transparent;
+        transition:0.15s;
+    }
+    .vaga.livre{background:#064e3b;color:#34d399;border-color:#059669}
+    .vaga.ocupada{background:#7f1d1d;color:#fca5a5;border-color:#dc2626}
+    .vaga:hover{transform:scale(1.05)}
+    .vaga .placa{font-size:0.62rem;margin-top:2px;opacity:0.9}
 
-        @media (max-width: 1000px) {
-            .main { grid-template-columns: 1fr; }
-        }
+    /* OPERADOR */
+    .abas{display:flex;gap:6px;margin-bottom:14px}
+    .aba{
+        flex:1;
+        padding:10px;
+        text-align:center;
+        background:#111827;
+        border:1px solid #374151;
+        border-radius:8px;
+        color:#9ca3af;
+        font-weight:600;
+        cursor:pointer;
+        font-size:0.9rem;
+    }
+    .aba.ativa{background:#0369a1;color:white;border-color:#0ea5e9}
 
-        .card {
-            background: #1e293b;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            padding: 20px;
-        }
+    .campo{margin-bottom:12px}
+    .campo label{display:block;font-size:0.8rem;color:#9ca3af;margin-bottom:4px}
+    .campo input,.campo select{
+        width:100%;
+        padding:11px 12px;
+        background:#111827;
+        border:1px solid #4b5563;
+        border-radius:8px;
+        color:#f3f4f6;
+        font-size:1rem;
+    }
+    .campo input:focus,.campo select:focus{outline:none;border-color:#38bdf8}
 
-        .card h2 {
-            font-size: 1.1rem;
-            margin-bottom: 16px;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .btn{
+        width:100%;
+        padding:13px;
+        border:none;
+        border-radius:8px;
+        font-size:1rem;
+        font-weight:600;
+        cursor:pointer;
+        color:white;
+        margin-top:4px;
+    }
+    .btn-entrada{background:#059669}
+    .btn-entrada:hover{background:#047857}
+    .btn-saida{background:#dc2626}
+    .btn-saida:hover{background:#b91c1c}
+    .btn-secundario{
+        background:#374151;
+        margin-top:8px;
+        font-size:0.88rem;
+    }
+    .btn-secundario:hover{background:#4b5563}
 
-        /* Grade de vagas */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
-            gap: 10px;
-        }
+    /* TICKET */
+    .ticket{
+        background:#111827;
+        border:2px dashed #4b5563;
+        border-radius:10px;
+        padding:16px;
+        margin-top:14px;
+        display:none;
+        text-align:center;
+    }
+    .ticket.visivel{display:block}
+    .ticket h3{color:#38bdf8;margin-bottom:10px;font-size:1rem}
+    .ticket .row{display:flex;justify-content:space-between;margin:6px 0;font-size:0.9rem}
+    .ticket .total{
+        margin-top:12px;
+        padding-top:10px;
+        border-top:1px dashed #4b5563;
+        font-size:1.5rem;
+        font-weight:700;
+        color:#fbbf24;
+    }
 
-        .vaga {
-            height: 72px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 2px solid transparent;
-        }
+    /* MENSAGEM */
+    .msg{
+        margin-top:12px;
+        padding:11px 13px;
+        background:#111827;
+        border-radius:8px;
+        font-size:0.88rem;
+        color:#9ca3af;
+        min-height:46px;
+        line-height:1.4;
+    }
 
-        .vaga.livre {
-            background: #064e3b;
-            color: #34d399;
-            border-color: #059669;
-        }
+    /* LISTA DE VEÍCULOS */
+    .lista-veiculos{
+        margin-top:16px;
+        max-height:180px;
+        overflow-y:auto;
+    }
+    .lista-veiculos h3{
+        font-size:0.82rem;
+        color:#9ca3af;
+        margin-bottom:8px;
+        text-transform:uppercase;
+    }
+    .item-veiculo{
+        background:#111827;
+        padding:8px 10px;
+        border-radius:6px;
+        margin-bottom:5px;
+        font-size:0.82rem;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        cursor:pointer;
+    }
+    .item-veiculo:hover{background:#1f2937}
+    .item-veiculo .placa-lista{font-weight:600;color:#e5e7eb}
 
-        .vaga.ocupada {
-            background: #7f1d1d;
-            color: #fca5a5;
-            border-color: #dc2626;
-        }
+    /* HISTÓRICO */
+    .historico{
+        margin-top:14px;
+        max-height:150px;
+        overflow-y:auto;
+    }
+    .log{
+        background:#111827;
+        padding:7px 10px;
+        border-radius:6px;
+        margin-bottom:5px;
+        font-size:0.78rem;
+        border-left:3px solid #38bdf8;
+    }
+    .log.entrada{border-left-color:#34d399}
+    .log.saida{border-left-color:#f87171}
+    .log .hora{color:#6b7280;font-size:0.7rem}
 
-        .vaga:hover {
-            transform: scale(1.05);
-        }
+    /* SCROLL */
+    .grade::-webkit-scrollbar,
+    .lista-veiculos::-webkit-scrollbar,
+    .historico::-webkit-scrollbar{width:5px}
+    .grade::-webkit-scrollbar-thumb,
+    .lista-veiculos::-webkit-scrollbar-thumb,
+    .historico::-webkit-scrollbar-thumb{background:#4b5563;border-radius:3px}
 
-        .vaga.selecionada {
-            border-color: #fbbf24 !important;
-            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.4);
-        }
-
-        .vaga .placa {
-            font-size: 0.68rem;
-            margin-top: 3px;
-            opacity: 0.9;
-        }
-
-        /* Painel de operação */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 10px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: #94a3b8;
-            cursor: pointer;
-            font-weight: 600;
-            text-align: center;
-            transition: 0.2s;
-        }
-
-        .tab.ativo {
-            background: #0369a1;
-            color: white;
-            border-color: #0ea5e9;
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-bottom: 5px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 11px 12px;
-            background: #0f172a;
-            border: 1px solid #475569;
-            border-radius: 8px;
-            color: #f1f5f9;
-            font-size: 1rem;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #38bdf8;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            color: white;
-            margin-top: 6px;
-            transition: 0.2s;
-        }
-
-        .btn-entrada {
-            background: #059669;
-        }
-        .btn-entrada:hover { background: #047857; }
-
-        .btn-saida {
-            background: #dc2626;
-        }
-        .btn-saida:hover { background: #b91c1c; }
-
-        .btn-saida:disabled {
-            background: #475569;
-            cursor: not-allowed;
-        }
-
-        /* Ticket */
-        .ticket {
-            background: #0f172a;
-            border: 2px dashed #475569;
-            border-radius: 10px;
-            padding: 16px;
-            margin-top: 16px;
-            text-align: center;
-            display: none;
-        }
-
-        .ticket.mostrar {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-
-        .ticket h3 {
-            color: #38bdf8;
-            margin-bottom: 10px;
-        }
-
-        .ticket .linha {
-            display: flex;
-            justify-content: space-between;
-            margin: 6px 0;
-            font-size: 0.95rem;
-        }
-
-        .ticket .valor {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #fbbf24;
-            margin-top: 10px;
-        }
-
-        /* Mensagem */
-        .mensagem {
-            margin-top: 14px;
-            padding: 12px;
-            background: #0f172a;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            color: #94a3b8;
-            min-height: 48px;
-        }
-
-        /* Histórico */
-        .historico {
-            margin-top: 18px;
-            max-height: 220px;
-            overflow-y: auto;
-        }
-
-        .log {
-            background: #0f172a;
-            padding: 9px 12px;
-            border-radius: 6px;
-            margin-bottom: 6px;
-            font-size: 0.82rem;
-            border-left: 3px solid #38bdf8;
-        }
-
-        .log.entrada { border-left-color: #34d399; }
-        .log.saida { border-left-color: #f87171; }
-
-        .log .hora {
-            color: #64748b;
-            font-size: 0.75rem;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Scrollbar */
-        .historico::-webkit-scrollbar { width: 5px; }
-        .historico::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-    </style>
+    @media print{
+        body *{visibility:hidden}
+        .ticket,.ticket *{visibility:visible}
+        .ticket{position:absolute;left:0;top:0;width:100%;background:white;color:black;border:2px solid #000}
+    }
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Cabeçalho -->
-        <div class="header">
-            <h1>🅿️ Sistema de Estacionamento</h1>
-            <div class="status">
-                <div class="status-item">Vagas: <span id="total">30</span></div>
-                <div class="status-item">Livres: <span id="livres" style="color:#34d399">30</span></div>
-                <div class="status-item">Ocupadas: <span id="ocupadas" style="color:#f87171">0</span></div>
-                <div class="status-item">Ocupação: <span id="ocupacao">0%</span></div>
-            </div>
-        </div>
+<div class="container">
 
-        <div class="main">
-            <!-- Mapa de Vagas -->
-            <div class="card">
-                <h2>🗺️ Mapa de Vagas</h2>
-                <div class="grid" id="grid"></div>
-            </div>
-
-            <!-- Painel do Operador -->
-            <div class="card">
-                <h2>👨‍💻 Painel do Operador</h2>
-
-                <div class="tabs">
-                    <div class="tab ativo" id="tabEntrada" onclick="mudarAba('entrada')">ENTRADA</div>
-                    <div class="tab" id="tabSaida" onclick="mudarAba('saida')">SAÍDA</div>
-                </div>
-
-                <!-- Formulário Entrada -->
-                <div id="formEntrada">
-                    <div class="form-group">
-                        <label>Placa do Veículo</label>
-                        <input type="text" id="placaEntrada" placeholder="ABC1D23" maxlength="8">
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de Veículo</label>
-                        <select id="tipo">
-                            <option value="carro">🚗 Carro - R$ 8,00/h</option>
-                            <option value="moto">🏍️ Moto - R$ 5,00/h</option>
-                            <option value="suv">🚙 SUV / Van - R$ 12,00/h</option>
-                        </select>
-                    </div>
-                    <button class="btn-entrada" onclick="registrarEntrada()">Registrar Entrada</button>
-                </div>
-
-                <!-- Formulário Saída -->
-                <div id="formSaida" style="display:none">
-                    <div class="form-group">
-                        <label>Placa do Veículo</label>
-                        <input type="text" id="placaSaida" placeholder="ABC1D23" maxlength="8">
-                    </div>
-                    <button class="btn-saida" onclick="registrarSaida()">Registrar Saída e Cobrar</button>
-                </div>
-
-                <!-- Ticket -->
-                <div class="ticket" id="ticket">
-                    <h3>🎫 TICKET DE ESTACIONAMENTO</h3>
-                    <div class="linha"><span>Placa:</span> <strong id="t-placa">-</strong></div>
-                    <div class="linha"><span>Vaga:</span> <strong id="t-vaga">-</strong></div>
-                    <div class="linha"><span>Tipo:</span> <strong id="t-tipo">-</strong></div>
-                    <div class="linha"><span>Entrada:</span> <strong id="t-entrada">-</strong></div>
-                    <div class="linha"><span>Saída:</span> <strong id="t-saida">-</strong></div>
-                    <div class="linha"><span>Tempo:</span> <strong id="t-tempo">-</strong></div>
-                    <div class="valor" id="t-valor">R$ 0,00</div>
-                </div>
-
-                <div class="mensagem" id="mensagem">
-                    Aguardando operação...
-                </div>
-
-                <div class="historico">
-                    <h3 style="font-size:0.9rem; color:#94a3b8; margin-bottom:10px;">📋 Últimas Operações</h3>
-                    <div id="logs"></div>
-                </div>
-            </div>
+    <!-- TOPO -->
+    <div class="topo">
+        <h1>🅿️ SISTEMA DE ESTACIONAMENTO</h1>
+        <div class="topo-info">
+            <div>Total: <b id="total">40</b></div>
+            <div>Operador: <b>Guichê 01</b></div>
+            <div id="relogio">00:00:00</div>
         </div>
     </div>
 
-    <script>
-        const TOTAL = 30;
-        const PRECOS = {
-            carro: 8,
-            moto: 5,
-            suv: 12
+    <!-- STATUS -->
+    <div class="status-bar">
+        <div class="status-box">
+            <div class="label">VAGAS LIVRES</div>
+            <div class="num verde" id="livres">40</div>
+        </div>
+        <div class="status-box">
+            <div class="label">OCUPADAS</div>
+            <div class="num vermelho" id="ocupadas">0</div>
+        </div>
+        <div class="status-box">
+            <div class="label">OCUPAÇÃO</div>
+            <div class="num azul" id="ocupacao">0%</div>
+        </div>
+        <div class="status-box">
+            <div class="label">RECEITA HOJE</div>
+            <div class="num amarelo" id="receita">R$ 0</div>
+        </div>
+    </div>
+
+    <div class="layout">
+
+        <!-- MAPA DE VAGAS -->
+        <div class="painel">
+            <h2>Mapa de Vagas</h2>
+            <div class="filtros">
+                <button class="filtro ativo" onclick="filtrar('todos')">Todos</button>
+                <button class="filtro" onclick="filtrar('A')">Setor A</button>
+                <button class="filtro" onclick="filtrar('B')">Setor B</button>
+                <button class="filtro" onclick="filtrar('C')">Setor C</button>
+                <button class="filtro" onclick="filtrar('D')">Setor D</button>
+            </div>
+            <div class="grade" id="grade"></div>
+        </div>
+
+        <!-- PAINEL DO OPERADOR -->
+        <div class="painel">
+            <h2>Painel do Operador</h2>
+
+            <div class="abas">
+                <div class="aba ativa" id="abaEntrada" onclick="trocarAba('entrada')">ENTRADA</div>
+                <div class="aba" id="abaSaida" onclick="trocarAba('saida')">SAÍDA</div>
+            </div>
+
+            <!-- ENTRADA -->
+            <div id="boxEntrada">
+                <div class="campo">
+                    <label>Placa do Veículo</label>
+                    <input type="text" id="placaIn" placeholder="ABC1D23" maxlength="8" autofocus>
+                </div>
+                <div class="campo">
+                    <label>Tipo de Veículo</label>
+                    <select id="tipo">
+                        <option value="carro">Carro — R$ 8,00 / hora</option>
+                        <option value="moto">Moto — R$ 5,00 / hora</option>
+                        <option value="suv">SUV / Van — R$ 12,00 / hora</option>
+                    </select>
+                </div>
+                <button class="btn btn-entrada" onclick="entrada()">REGISTRAR ENTRADA</button>
+            </div>
+
+            <!-- SAÍDA -->
+            <div id="boxSaida" style="display:none">
+                <div class="campo">
+                    <label>Placa do Veículo</label>
+                    <input type="text" id="placaOut" placeholder="ABC1D23" maxlength="8">
+                </div>
+                <button class="btn btn-saida" onclick="saida()">REGISTRAR SAÍDA + COBRAR</button>
+            </div>
+
+            <!-- TICKET -->
+            <div class="ticket" id="ticket">
+                <h3>COMPROVANTE DE ESTACIONAMENTO</h3>
+                <div class="row"><span>Placa:</span><b id="tk-placa">-</b></div>
+                <div class="row"><span>Vaga:</span><b id="tk-vaga">-</b></div>
+                <div class="row"><span>Tipo:</span><b id="tk-tipo">-</b></div>
+                <div class="row"><span>Entrada:</span><b id="tk-entrada">-</b></div>
+                <div class="row"><span>Saída:</span><b id="tk-saida">-</b></div>
+                <div class="row"><span>Tempo:</span><b id="tk-tempo">-</b></div>
+                <div class="total" id="tk-valor">R$ 0,00</div>
+                <button class="btn btn-secundario" onclick="window.print()">Imprimir Comprovante</button>
+            </div>
+
+            <div class="msg" id="msg">Sistema operacional. Aguardando veículo...</div>
+
+            <!-- LISTA DE VEÍCULOS ESTACIONADOS -->
+            <div class="lista-veiculos">
+                <h3>Veículos no Pátio</h3>
+                <div id="listaVeiculos"></div>
+            </div>
+
+            <!-- HISTÓRICO -->
+            <div class="historico">
+                <h3 style="font-size:0.82rem;color:#9ca3af;margin-bottom:8px;text-transform:uppercase">Últimas Operações</h3>
+                <div id="logs"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const TOTAL = 40;
+const PRECOS = { carro:8, moto:5, suv:12 };
+const ICONE = { carro:'🚗', moto:'🏍️', suv:'🚙' };
+
+let vagas = [];
+let historico = [];
+let receita = 0;
+let filtroAtual = 'todos';
+
+function carregar(){
+    const d = localStorage.getItem('estacionamento_real_v3');
+    if(d){
+        const p = JSON.parse(d);
+        vagas = p.vagas || [];
+        historico = p.historico || [];
+        receita = p.receita || 0;
+    }
+    if(vagas.length === 0){
+        for(let i=1;i<=TOTAL;i++){
+            let setor = 'A';
+            if(i>10 && i<=20) setor='B';
+            if(i>20 && i<=30) setor='C';
+            if(i>30) setor='D';
+            vagas.push({numero:i, setor, ocupada:false, placa:null, tipo:null, entrada:null});
+        }
+    }
+}
+
+function salvar(){
+    localStorage.setItem('estacionamento_real_v3', JSON.stringify({vagas, historico, receita}));
+}
+
+function relogio(){
+    document.getElementById('relogio').textContent = new Date().toLocaleTimeString('pt-BR');
+}
+setInterval(relogio,1000);
+relogio();
+
+function desenhar(){
+    const grade = document.getElementById('grade');
+    grade.innerHTML = '';
+
+    const lista = filtroAtual==='todos' ? vagas : vagas.filter(v=>v.setor===filtroAtual);
+
+    lista.forEach(v=>{
+        const el = document.createElement('div');
+        el.className = 'vaga ' + (v.ocupada ? 'ocupada' : 'livre');
+        if(v.ocupada){
+            el.innerHTML = `${ICONE[v.tipo]||'🚗'}<div>V${String(v.numero).padStart(2,'0')}</div><div class="placa">${v.placa}</div>`;
+        }else{
+            el.innerHTML = `<div>V${String(v.numero).padStart(2,'0')}</div><div style="font-size:0.65rem;opacity:0.7">${v.setor}</div>`;
+        }
+        el.onclick = ()=>{
+            if(v.ocupada){
+                document.getElementById('placaOut').value = v.placa;
+                trocarAba('saida');
+                msg(`Vaga V${String(v.numero).padStart(2,'0')} selecionada — ${v.placa}`);
+            }else{
+                trocarAba('entrada');
+                msg(`Vaga V${String(v.numero).padStart(2,'0')} (Setor ${v.setor}) disponível`);
+            }
         };
+        grade.appendChild(el);
+    });
 
-        let vagas = [];
-        let historico = [];
-        let modo = 'entrada'; // entrada ou saida
+    atualizarStatus();
+    renderLista();
+    renderLogs();
+}
 
-        // Carrega dados
-        function carregar() {
-            const dados = localStorage.getItem('estacionamento_real');
-            if (dados) {
-                const p = JSON.parse(dados);
-                vagas = p.vagas || [];
-                historico = p.historico || [];
-            }
-            if (vagas.length === 0) {
-                for (let i = 1; i <= TOTAL; i++) {
-                    vagas.push({
-                        numero: i,
-                        ocupada: false,
-                        placa: null,
-                        tipo: null,
-                        entrada: null
-                    });
-                }
-            }
-        }
+function filtrar(s){
+    filtroAtual = s;
+    document.querySelectorAll('.filtro').forEach(b=>b.classList.remove('ativo'));
+    event.target.classList.add('ativo');
+    desenhar();
+}
 
-        function salvar() {
-            localStorage.setItem('estacionamento_real', JSON.stringify({ vagas, historico }));
-        }
+function atualizarStatus(){
+    const oc = vagas.filter(v=>v.ocupada).length;
+    document.getElementById('livres').textContent = TOTAL - oc;
+    document.getElementById('ocupadas').textContent = oc;
+    document.getElementById('ocupacao').textContent = Math.round(oc/TOTAL*100) + '%';
+    document.getElementById('receita').textContent = 'R$ ' + receita.toFixed(0);
+}
 
-        function desenhar() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
+function trocarAba(tipo){
+    document.getElementById('abaEntrada').classList.toggle('ativa', tipo==='entrada');
+    document.getElementById('abaSaida').classList.toggle('ativa', tipo==='saida');
+    document.getElementById('boxEntrada').style.display = tipo==='entrada' ? 'block' : 'none';
+    document.getElementById('boxSaida').style.display = tipo==='saida' ? 'block' : 'none';
+    document.getElementById('ticket').classList.remove('visivel');
+}
 
-            vagas.forEach(v => {
-                const div = document.createElement('div');
-                div.className = `vaga ${v.ocupada ? 'ocupada' : 'livre'}`;
-                div.innerHTML = `
-                    V${String(v.numero).padStart(2,'0')}
-                    ${v.ocupada ? `<div class="placa">${v.placa}</div>` : ''}
-                `;
-                div.onclick = () => {
-                    if (v.ocupada) {
-                        document.getElementById('placaSaida').value = v.placa;
-                        mudarAba('saida');
-                        document.getElementById('mensagem').innerHTML = `Vaga V${String(v.numero).padStart(2,'0')} selecionada (${v.placa})`;
-                    } else {
-                        mudarAba('entrada');
-                        document.getElementById('mensagem').innerHTML = `Vaga V${String(v.numero).padStart(2,'0')} livre`;
-                    }
-                };
-                grid.appendChild(div);
-            });
+function msg(texto){
+    document.getElementById('msg').innerHTML = texto;
+}
 
-            atualizarStatus();
-            renderHistorico();
-        }
+// ===== ENTRADA =====
+function entrada(){
+    let placa = document.getElementById('placaIn').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    const tipo = document.getElementById('tipo').value;
 
-        function atualizarStatus() {
-            const ocupadas = vagas.filter(v => v.ocupada).length;
-            document.getElementById('livres').textContent = TOTAL - ocupadas;
-            document.getElementById('ocupadas').textContent = ocupadas;
-            document.getElementById('ocupacao').textContent = Math.round((ocupadas / TOTAL) * 100) + '%';
-        }
+    if(placa.length < 7){ alert('Informe uma placa válida'); return; }
+    if(vagas.some(v=>v.ocupada && v.placa===placa)){ alert('Veículo já está no pátio'); return; }
 
-        function mudarAba(tipo) {
-            modo = tipo;
-            document.getElementById('tabEntrada').classList.toggle('ativo', tipo === 'entrada');
-            document.getElementById('tabSaida').classList.toggle('ativo', tipo === 'saida');
-            document.getElementById('formEntrada').style.display = tipo === 'entrada' ? 'block' : 'none';
-            document.getElementById('formSaida').style.display = tipo === 'saida' ? 'block' : 'none';
-            document.getElementById('ticket').classList.remove('mostrar');
-        }
+    const livre = vagas.find(v=>!v.ocupada);
+    if(!livre){ alert('Estacionamento lotado'); return; }
 
-        // ===== ENTRADA =====
-        function registrarEntrada() {
-            let placa = document.getElementById('placaEntrada').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-            const tipo = document.getElementById('tipo').value;
+    livre.ocupada = true;
+    livre.placa = placa;
+    livre.tipo = tipo;
+    livre.entrada = new Date().toISOString();
 
-            if (placa.length < 7) {
-                alert('Digite uma placa válida!');
-                return;
-            }
+    document.getElementById('placaIn').value = '';
+    log('entrada', `ENTRADA  ${placa}  →  V${String(livre.numero).padStart(2,'0')} (${livre.setor})`);
+    msg(`✅ Entrada liberada<br><strong>${placa}</strong> → Vaga <strong>V${String(livre.numero).padStart(2,'0')}</strong> (Setor ${livre.setor})`);
 
-            // Já está dentro?
-            if (vagas.some(v => v.ocupada && v.placa === placa)) {
-                alert('Este veículo já está estacionado!');
-                return;
-            }
+    mostrarTicket('entrada', livre);
+    salvar();
+    desenhar();
+}
 
-            const vagaLivre = vagas.find(v => !v.ocupada);
-            if (!vagaLivre) {
-                alert('Estacionamento lotado!');
-                return;
-            }
+// ===== SAÍDA =====
+function saida(){
+    let placa = document.getElementById('placaOut').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(placa.length < 7){ alert('Informe a placa'); return; }
 
-            vagaLivre.ocupada = true;
-            vagaLivre.placa = placa;
-            vagaLivre.tipo = tipo;
-            vagaLivre.entrada = new Date().toISOString();
+    const v = vagas.find(x=>x.ocupada && x.placa===placa);
+    if(!v){ alert('Veículo não localizado no pátio'); return; }
 
-            document.getElementById('placaEntrada').value = '';
-            adicionarLog('entrada', `ENTRADA → ${placa} | Vaga V${String(vagaLivre.numero).padStart(2,'0')} | ${tipo}`);
-            document.getElementById('mensagem').innerHTML = `
-                ✅ Entrada registrada<br>
-                Placa: <strong>${placa}</strong> | Vaga: <strong>V${String(vagaLivre.numero).padStart(2,'0')}</strong>
-            `;
+    const tempo = calcTempo(v.entrada);
+    const valor = calcValor(v.entrada, v.tipo);
+    const agora = new Date();
 
-            // Mostra ticket de entrada
-            mostrarTicketEntrada(vagaLivre);
+    receita += valor;
+    mostrarTicket('saida', v, agora, tempo, valor);
+    log('saida', `SAÍDA  ${placa}  →  ${tempo}  →  R$ ${valor.toFixed(2)}`);
 
-            salvar();
-            desenhar();
-        }
+    msg(`✅ Saída liberada<br>Valor a receber: <strong style="color:#fbbf24">R$ ${valor.toFixed(2)}</strong>`);
 
-        // ===== SAÍDA =====
-        function registrarSaida() {
-            let placa = document.getElementById('placaSaida').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    v.ocupada = false;
+    v.placa = null;
+    v.tipo = null;
+    v.entrada = null;
 
-            if (placa.length < 7) {
-                alert('Digite a placa!');
-                return;
-            }
+    document.getElementById('placaOut').value = '';
+    salvar();
+    desenhar();
+}
 
-            const vaga = vagas.find(v => v.ocupada && v.placa === placa);
-            if (!vaga) {
-                alert('Veículo não encontrado no estacionamento!');
-                return;
-            }
+function calcTempo(iso){
+    const s = Math.floor((new Date()-new Date(iso))/1000);
+    if(s<60) return s+'s';
+    if(s<3600) return Math.floor(s/60)+'min';
+    return Math.floor(s/3600)+'h '+Math.floor((s%3600)/60)+'min';
+}
 
-            const tempo = calcularTempo(vaga.entrada);
-            const valor = calcularValor(vaga.entrada, vaga.tipo);
-            const saida = new Date();
+function calcValor(iso, tipo){
+    const h = (new Date()-new Date(iso))/(1000*60*60);
+    return Math.max(1, Math.ceil(h)) * (PRECOS[tipo]||8);
+}
 
-            // Mostra ticket de saída
-            mostrarTicketSaida(vaga, saida, tempo, valor);
+function mostrarTicket(tipo, v, saida=null, tempo=null, valor=null){
+    const t = document.getElementById('ticket');
+    t.classList.add('visivel');
+    document.getElementById('tk-placa').textContent = v.placa;
+    document.getElementById('tk-vaga').textContent = 'V'+String(v.numero).padStart(2,'0')+' / Setor '+v.setor;
+    document.getElementById('tk-tipo').textContent = (ICONE[v.tipo]||'')+' '+v.tipo.toUpperCase();
+    document.getElementById('tk-entrada').textContent = new Date(v.entrada).toLocaleString('pt-BR');
 
-            adicionarLog('saida', `SAÍDA → ${placa} | Vaga V${String(vaga.numero).padStart(2,'0')} | ${tempo} | R$ ${valor.toFixed(2)}`);
+    if(tipo==='entrada'){
+        document.getElementById('tk-saida').textContent = '—';
+        document.getElementById('tk-tempo').textContent = '—';
+        document.getElementById('tk-valor').textContent = 'ENTRADA OK';
+    }else{
+        document.getElementById('tk-saida').textContent = saida.toLocaleString('pt-BR');
+        document.getElementById('tk-tempo').textContent = tempo;
+        document.getElementById('tk-valor').textContent = 'R$ '+valor.toFixed(2);
+    }
+}
 
-            // Libera a vaga
-            vaga.ocupada = false;
-            vaga.placa = null;
-            vaga.tipo = null;
-            vaga.entrada = null;
+function log(tipo, texto){
+    historico.unshift({
+        tipo,
+        texto,
+        hora: new Date().toLocaleTimeString('pt-BR')
+    });
+    if(historico.length>25) historico.pop();
+}
 
-            document.getElementById('placaSaida').value = '';
-            document.getElementById('mensagem').innerHTML = `
-                ✅ Saída registrada<br>
-                Valor a cobrar: <strong style="color:#fbbf24">R$ ${valor.toFixed(2)}</strong>
-            `;
+function renderLogs(){
+    const el = document.getElementById('logs');
+    el.innerHTML = '';
+    if(historico.length===0){
+        el.innerHTML = '<div style="color:#6b7280;font-size:0.82rem">Nenhuma operação</div>';
+        return;
+    }
+    historico.slice(0,12).forEach(i=>{
+        const d = document.createElement('div');
+        d.className = 'log '+i.tipo;
+        d.innerHTML = `<div class="hora">${i.hora}</div>${i.texto}`;
+        el.appendChild(d);
+    });
+}
 
-            salvar();
-            desenhar();
-        }
+function renderLista(){
+    const el = document.getElementById('listaVeiculos');
+    const ocupados = vagas.filter(v=>v.ocupada);
+    el.innerHTML = '';
+    if(ocupados.length===0){
+        el.innerHTML = '<div style="color:#6b7280;font-size:0.82rem">Nenhum veículo no pátio</div>';
+        return;
+    }
+    ocupados.forEach(v=>{
+        const d = document.createElement('div');
+        d.className = 'item-veiculo';
+        d.innerHTML = `
+            <span class="placa-lista">${ICONE[v.tipo]||''} ${v.placa}</span>
+            <span>V${String(v.numero).padStart(2,'0')} · ${v.setor}</span>
+        `;
+        d.onclick = ()=>{
+            document.getElementById('placaOut').value = v.placa;
+            trocarAba('saida');
+        };
+        el.appendChild(d);
+    });
+}
 
-        function calcularTempo(entradaISO) {
-            const diff = Math.floor((new Date() - new Date(entradaISO)) / 1000);
-            if (diff < 60) return `${diff}s`;
-            if (diff < 3600) return `${Math.floor(diff/60)}min`;
-            const h = Math.floor(diff / 3600);
-            const m = Math.floor((diff % 3600) / 60);
-            return `${h}h ${m}min`;
-        }
+// Atalho Enter
+document.getElementById('placaIn').addEventListener('keydown', e=>{
+    if(e.key==='Enter') entrada();
+});
+document.getElementById('placaOut').addEventListener('keydown', e=>{
+    if(e.key==='Enter') saida();
+});
 
-        function calcularValor(entradaISO, tipo) {
-            const horas = (new Date() - new Date(entradaISO)) / (1000 * 60 * 60);
-            const precoHora = PRECOS[tipo] || 8;
-            // Mínimo 1 hora
-            return Math.max(1, Math.ceil(horas)) * precoHora;
-        }
-
-        function mostrarTicketEntrada(vaga) {
-            const t = document.getElementById('ticket');
-            t.classList.add('mostrar');
-            document.getElementById('t-placa').textContent = vaga.placa;
-            document.getElementById('t-vaga').textContent = 'V' + String(vaga.numero).padStart(2,'0');
-            document.getElementById('t-tipo').textContent = vaga.tipo.toUpperCase();
-            document.getElementById('t-entrada').textContent = new Date(vaga.entrada).toLocaleString('pt-BR');
-            document.getElementById('t-saida').textContent = '-';
-            document.getElementById('t-tempo').textContent = '-';
-            document.getElementById('t-valor').textContent = 'ENTRADA REGISTRADA';
-        }
-
-        function mostrarTicketSaida(vaga, saida, tempo, valor) {
-            const t = document.getElementById('ticket');
-            t.classList.add('mostrar');
-            document.getElementById('t-placa').textContent = vaga.placa;
-            document.getElementById('t-vaga').textContent = 'V' + String(vaga.numero).padStart(2,'0');
-            document.getElementById('t-tipo').textContent = vaga.tipo.toUpperCase();
-            document.getElementById('t-entrada').textContent = new Date(vaga.entrada).toLocaleString('pt-BR');
-            document.getElementById('t-saida').textContent = saida.toLocaleString('pt-BR');
-            document.getElementById('t-tempo').textContent = tempo;
-            document.getElementById('t-valor').textContent = 'R$ ' + valor.toFixed(2);
-        }
-
-        function adicionarLog(tipo, texto) {
-            historico.unshift({
-                tipo,
-                texto,
-                hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})
-            });
-            if (historico.length > 15) historico.pop();
-        }
-
-        function renderHistorico() {
-            const el = document.getElementById('logs');
-            el.innerHTML = '';
-            if (historico.length === 0) {
-                el.innerHTML = '<div style="color:#64748b;font-size:0.85rem">Nenhuma operação ainda</div>';
-                return;
-            }
-            historico.forEach(item => {
-                const div = document.createElement('div');
-                div.className = `log ${item.tipo}`;
-                div.innerHTML = `<div class="hora">${item.hora}</div>${item.texto}`;
-                el.appendChild(div);
-            });
-        }
-
-        // Inicia
-        carregar();
-        desenhar();
-    </script>
+carregar();
+desenhar();
+</script>
 </body>
 </html>
